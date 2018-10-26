@@ -10,18 +10,15 @@
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictPropertyInitialization": false,
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "esModuleInterop": true,
     "allowSyntheticDefaultImports": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "**/*/.test.ts", "__tests__"],
   "include": ["./src/**/*.tsx", "./src/**/*.ts"]
 }

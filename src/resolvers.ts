@@ -1,5 +1,4 @@
 import { IResolvers } from "graphql-tools";
-import * as bcrypt from "bcrypt";
 import { User } from "./entity/User";
 import { hash } from "bcrypt";
 import { accountType } from "./enums/accountType.enum";
@@ -14,16 +13,19 @@ export const resolvers: IResolvers = {
     ]
   },
   Mutation: {
-    async registerUser(_, args: GQL.IRegisterUserOnMutationArguments) {
+    async registerUser(_: any, { user }: { user: GQL.IUserRegistrationType }) {
       try {
-        const hashedPwd = await hash(args.password, 10);
+        const hashedPwd = await hash(user.password, 10);
         await User.create({
-          ...args,
+          ...user,
           password: hashedPwd,
           accountType: accountType.USER
         }).save();
         return true;
-      } catch (err) {}
+      } catch (err) {
+        console.log(err);
+        return false;
+      }
     }
   }
 };

@@ -42,6 +42,10 @@ declare namespace GQL {
   }
 
   interface IRegisterUserOnMutationArguments {
+    user?: IUserRegistrationType | null;
+  }
+
+  interface IUserRegistrationType {
     email: string;
     password: string;
     firstName: string;

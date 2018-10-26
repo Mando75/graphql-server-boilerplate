@@ -9,12 +9,14 @@ export const typeDefs = gql`
     author: String
   }
 
+  input UserRegistrationType {
+    email: String!
+    password: String!
+    firstName: String!
+    lastName: String!
+  }
+
   type Mutation {
-    registerUser(
-      email: String!
-      password: String!
-      firstName: String!
-      lastName: String!
-    ): Boolean
+    registerUser(user: UserRegistrationType): Boolean
   }
 `;
