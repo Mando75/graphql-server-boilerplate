@@ -2,10 +2,9 @@
   "name": "graphql-server-boilerplate",
   "version": "1.0.0",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "NODE_ENV=production node dist/index.js",
     "dev": "NODE_ENV=development nodemon --watch dist ./dist/index.js",
     "test-server": "NODE_ENV=test ts-node ./src/index.ts",
-    "ci": "start-server-and-test test-server :4000 test",
     "test": "NODE_ENV=test jest",
     "gen-types": "yarn run schema:download && yarn run schema:generate-types",
     "schema:download": "apollo schema:download --endpoint=http://localhost:4000",

@@ -1,4 +1,7 @@
 import "reflect-metadata";
-import { startServer } from "./startServer";
+import {
+  bootstrapConnections,
+  normalizePort
+} from "./utils/bootstrapConnections";
 
-startServer();
+bootstrapConnections(normalizePort(process.env.PORT || "4000"));

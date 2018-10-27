@@ -1,7 +1,13 @@
 import { request } from "graphql-request";
-import { startServer } from "../src/startServer";
+import "reflect-metadata";
+import {
+  bootstrapConnections,
+  normalizePort
+} from "../src/utils/bootstrapConnections";
 import { ServerInfo } from "apollo-server";
 import { Connection } from "typeorm";
+
+const port = 4001;
 
 const user = `{
   email: "chucknorris@chuck.com",
@@ -15,16 +21,20 @@ const mutation = `
     registerUser(user: ${user})
   }
 `;
+
 let app: ServerInfo;
 let db: Connection;
+
 beforeAll(async () => {
-  const resp = await startServer();
-  app = resp.app;
-  db = resp.db;
+  const resp = await bootstrapConnections(normalizePort(port));
+  if (resp) {
+    app = resp.app;
+    db = resp.db;
+  }
 });
 
 test("Register User", async () => {
-  const resp = await request("http://localhost:4000", mutation);
+  const resp = await request(`http://localhost:${port}`, mutation);
   expect(resp).toEqual({ registerUser: true });
 });
 
