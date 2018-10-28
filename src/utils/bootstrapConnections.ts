@@ -1,8 +1,9 @@
 import { ApolloServer, ServerInfo } from "apollo-server";
-import { typeDefs } from "../schema.graphql";
-import { resolvers } from "../resolvers";
+import { makeSchema } from "./makeSchema";
 import { CreateTypeORMConnection } from "./CreateTypeORMConnection";
 import { Connection } from "typeorm";
+import mergeSchemas from "graphql-tools/dist/stitching/mergeSchemas";
+import { GraphQLSchema } from "graphql";
 
 // @ts-ignore
 /**
@@ -13,14 +14,25 @@ import { Connection } from "typeorm";
 export const bootstrapConnections = async (port: number) => {
   let db: Connection, app: ServerInfo;
   try {
-    const server = new ApolloServer({ typeDefs, resolvers });
     db = await CreateTypeORMConnection();
+    const schemas: GraphQLSchema[] = await makeSchema();
+    const server = new ApolloServer({
+      schema: mergeSchemas({ schemas }),
+      formatError: (error: Error) => {
+        console.log(error);
+        return error;
+      },
+      formatResponse: (response: Response) => {
+        console.log(response);
+        return response;
+      }
+    });
     console.log(`Connected to db ${db.name}`);
     app = await server.listen({
       port: port
     });
 
-    console.log(`🚀  Server ready at ${app.url}`);
+    console.log(`🚀  Server ready at ${app.url}: Happy Coding!`);
     return { app, db };
   } catch (e) {
     console.error("Could not bootstrap server connections. Exiting", e);

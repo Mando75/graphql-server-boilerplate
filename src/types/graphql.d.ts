@@ -51,11 +51,6 @@ declare namespace GQL {
     firstName: string;
     lastName: string;
   }
-
-  const enum CacheControlScope {
-    PUBLIC = "PUBLIC",
-    PRIVATE = "PRIVATE"
-  }
 }
 
 // tslint:enable

@@ -11,15 +11,15 @@
       {
         "kind": "OBJECT",
         "name": "Query",
-        "description": "",
+        "description": null,
         "fields": [
           {
             "name": "books",
-            "description": "",
+            "description": null,
             "args": [
               {
                 "name": "title",
-                "description": "",
+                "description": null,
                 "type": {
                   "kind": "SCALAR",
                   "name": "String",
@@ -29,7 +29,7 @@
               },
               {
                 "name": "author",
-                "description": "",
+                "description": null,
                 "type": {
                   "kind": "SCALAR",
                   "name": "String",
@@ -69,11 +69,11 @@
       {
         "kind": "OBJECT",
         "name": "Book",
-        "description": "",
+        "description": null,
         "fields": [
           {
             "name": "title",
-            "description": "",
+            "description": null,
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -85,7 +85,7 @@
           },
           {
             "name": "author",
-            "description": "",
+            "description": null,
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -104,15 +104,15 @@
       {
         "kind": "OBJECT",
         "name": "Mutation",
-        "description": "",
+        "description": null,
         "fields": [
           {
             "name": "registerUser",
-            "description": "",
+            "description": null,
             "args": [
               {
                 "name": "user",
-                "description": "",
+                "description": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
                   "name": "UserRegistrationType",
@@ -138,12 +138,12 @@
       {
         "kind": "INPUT_OBJECT",
         "name": "UserRegistrationType",
-        "description": "",
+        "description": null,
         "fields": null,
         "inputFields": [
           {
             "name": "email",
-            "description": "",
+            "description": null,
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -157,7 +157,7 @@
           },
           {
             "name": "password",
-            "description": "",
+            "description": null,
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -171,7 +171,7 @@
           },
           {
             "name": "firstName",
-            "description": "",
+            "description": null,
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -185,7 +185,7 @@
           },
           {
             "name": "lastName",
-            "description": "",
+            "description": null,
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -1049,78 +1049,29 @@
           }
         ],
         "possibleTypes": null
-      },
-      {
-        "kind": "ENUM",
-        "name": "CacheControlScope",
-        "description": "",
-        "fields": null,
-        "inputFields": null,
-        "interfaces": null,
-        "enumValues": [
-          {
-            "name": "PUBLIC",
-            "description": "",
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "PRIVATE",
-            "description": "",
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "possibleTypes": null
-      },
-      {
-        "kind": "SCALAR",
-        "name": "Upload",
-        "description": "The `Upload` scalar type represents a file upload promise that resolves an object containing `stream`, `filename`, `mimetype` and `encoding`.",
-        "fields": null,
-        "inputFields": null,
-        "interfaces": null,
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "SCALAR",
-        "name": "Int",
-        "description": "The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1. ",
-        "fields": null,
-        "inputFields": null,
-        "interfaces": null,
-        "enumValues": null,
-        "possibleTypes": null
       }
     ],
     "directives": [
       {
-        "name": "cacheControl",
-        "description": "",
+        "name": "include",
+        "description": "Directs the executor to include this field or fragment only when the `if` argument is true.",
         "locations": [
-          "FIELD_DEFINITION",
-          "OBJECT",
-          "INTERFACE"
+          "FIELD",
+          "FRAGMENT_SPREAD",
+          "INLINE_FRAGMENT"
         ],
         "args": [
           {
-            "name": "maxAge",
-            "description": "",
+            "name": "if",
+            "description": "Included when true.",
             "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null
-          },
-          {
-            "name": "scope",
-            "description": "",
-            "type": {
-              "kind": "ENUM",
-              "name": "CacheControlScope",
-              "ofType": null
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
             },
             "defaultValue": null
           }
@@ -1138,31 +1089,6 @@
           {
             "name": "if",
             "description": "Skipped when true.",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Boolean",
-                "ofType": null
-              }
-            },
-            "defaultValue": null
-          }
-        ]
-      },
-      {
-        "name": "include",
-        "description": "Directs the executor to include this field or fragment only when the `if` argument is true.",
-        "locations": [
-          "FIELD",
-          "FRAGMENT_SPREAD",
-          "INLINE_FRAGMENT"
-        ],
-        "args": [
-          {
-            "name": "if",
-            "description": "Included when true.",
             "type": {
               "kind": "NON_NULL",
               "name": null,
