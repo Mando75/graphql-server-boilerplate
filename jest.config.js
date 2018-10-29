@@ -1,18 +1,13 @@
 module.exports = {
   verbose: false,
-  transform: {
-    "^^.+\\.tsx?$": "ts-jest"
+  globals: {
+    port: 4001,
+    host: 'http://localhost:4001'
   },
-  testPathIgnorePatterns: [
-    "/node_modules/",
-    "/dist/"
-  ],
+  transform: {
+    "^^.+\\.tsx?$": "ts-jest",
+  },
+  testPathIgnorePatterns: ["/node_modules/", "/dist/"],
   testRegex: "/__tests__/.*.test.(js|ts|tsx)?$",
-  moduleFileExtensions: [
-    "ts",
-    "tsx",
-    "js",
-    "json",
-    "node"
-  ]
+  moduleFileExtensions: ["ts", "tsx", "js", "json", "node"],
 };

@@ -1,17 +1,10 @@
-import { User } from "../../entity/User";
 import { hash } from "bcrypt";
 import { accountType } from "../../enums/accountType.enum";
 import { ResolverMap } from "../../types/graphql-utils";
+import { registerUser, userExists } from "./lib";
+import IUserRegistrationType = GQL.IUserRegistrationType;
 
 export const resolvers: ResolverMap = {
-  Query: {
-    books: (_: any, { title, author }: GQL.IBooksOnQueryArguments) => [
-      {
-        title,
-        author
-      }
-    ]
-  },
   Mutation: {
     /**
      * TODO: Return type User
@@ -20,20 +13,33 @@ export const resolvers: ResolverMap = {
      * @param _
      * @param user
      */
-    async registerUser(_: any, { user }: { user: GQL.IUserRegistrationType }) {
+    async registerUser(_: any, { user }: { user: IUserRegistrationType }) {
       try {
+        if (await userExists(user.email)) {
+          return [
+            {
+              path: "email",
+              message: "already exists"
+            }
+          ];
+        }
+
         // hash password before insertion
         const hashedPwd = await hash(user.password, 10);
-        await User.create({
-          ...user,
-          // replace password field with new hashed password
-          password: hashedPwd,
+        await registerUser({
+          user,
+          hashedPwd,
           accountType: accountType.USER
-        }).save();
-        return true;
+        });
+        return null;
       } catch (err) {
         console.log(err);
-        return false;
+        return [
+          {
+            path: "register",
+            message: "user could not be registered"
+          }
+        ];
       }
     }
   }

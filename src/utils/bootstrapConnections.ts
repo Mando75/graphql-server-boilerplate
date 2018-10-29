@@ -2,7 +2,6 @@ import { ApolloServer, ServerInfo } from "apollo-server";
 import { makeSchema } from "./makeSchema";
 import { CreateTypeORMConnection } from "./CreateTypeORMConnection";
 import { Connection } from "typeorm";
-import mergeSchemas from "graphql-tools/dist/stitching/mergeSchemas";
 import { GraphQLSchema } from "graphql";
 
 // @ts-ignore
@@ -15,9 +14,9 @@ export const bootstrapConnections = async (port: number) => {
   let db: Connection, app: ServerInfo;
   try {
     db = await CreateTypeORMConnection();
-    const schemas: GraphQLSchema[] = await makeSchema();
+    const schema: GraphQLSchema = await makeSchema();
     const server = new ApolloServer({
-      schema: mergeSchemas({ schemas }),
+      schema,
       formatError: (error: Error) => {
         console.log(error);
         return error;
@@ -27,7 +26,7 @@ export const bootstrapConnections = async (port: number) => {
         return response;
       }
     });
-    console.log(`Connected to db ${db.name}`);
+    console.log(`Connected to db ${db.options.database}`);
     app = await server.listen({
       port: port
     });

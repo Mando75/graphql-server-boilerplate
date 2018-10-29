@@ -1,22 +1,36 @@
 import * as fs from "fs";
 import { makeExecutableSchema } from "graphql-tools";
-import { GraphQLSchema } from "graphql";
 
 /**
  * Reads through the modules directory and loads every module into the schema.
- * Each module must have a schema.graphql.ts and a resolvers.ts file. These will
+ * Each module must have a schema.root.graphql.ts and a resolvers.root.ts file. These will
  * be loaded into the schema dynamically.
  */
 export const makeSchema = () => {
-  const schemas: GraphQLSchema[] = [];
+  const root = getRootSchema();
+  const resolversCollection = [root.resolvers];
+  const typeDefsCollection = [root.typeDefs];
   const folders: string[] = fs.readdirSync(__dirname + `/../modules`);
-  folders.map((folder: string) => {
+  folders.forEach((folder: string) => {
     const { resolvers } = require(filePath(folder, "resolvers"));
     const { typeDefs } = require(filePath(folder, "schema.graphql"));
-    schemas.push(makeExecutableSchema({ resolvers, typeDefs }));
+    resolversCollection.push(resolvers);
+    typeDefsCollection.push(typeDefs);
   });
 
-  return schemas;
+  return makeExecutableSchema({
+    resolvers: resolversCollection,
+    typeDefs: typeDefsCollection
+  });
+};
+
+/**
+ * Get the root schema elements and return them as executable schema
+ */
+const getRootSchema = () => {
+  const { typeDefs } = require(__dirname + `/../schema.root.graphql`);
+  const { resolvers } = require(__dirname + `/../resolvers.root`);
+  return { resolvers, typeDefs };
 };
 
 /**

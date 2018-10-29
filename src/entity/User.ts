@@ -1,19 +1,17 @@
 import {
   Entity,
   Index,
-  PrimaryColumn,
   Column,
-  BeforeInsert,
   CreateDateColumn,
   UpdateDateColumn,
-  BaseEntity
+  BaseEntity,
+  PrimaryGeneratedColumn
 } from "typeorm";
-import { v4 as uuid } from "uuid";
 import { accountType } from "../enums/accountType.enum";
 
 @Entity("users")
 export class User extends BaseEntity {
-  @PrimaryColumn("uuid")
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column({ type: "varchar", length: 255, nullable: true })
@@ -54,9 +52,4 @@ export class User extends BaseEntity {
 
   @Column({ type: "boolean", default: false })
   emailConfirmed: boolean;
-
-  @BeforeInsert()
-  addId() {
-    this.id = uuid();
-  }
 }

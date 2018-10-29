@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "build": "yarn run tsc -p ./",
-    "start": "NODE_ENV=production node dist/index.js",
-    "run": "NODE_ENV=development nodemon --exec ts-node ./src/index.ts",
+    "start": "node dist/index.js",
+    "run": "NODE_ENV=development nodemon --watch ./dist ./dist/index.js",
     "test": "NODE_ENV=test jest --coverage",
     "gen-types": "yarn run schema:download && yarn run schema:generate-types",
     "schema:download": "apollo schema:download --endpoint=http://localhost:4000",
@@ -22,8 +22,7 @@
     "graphql-tools": "^4.0.2",
     "pg": "^7.5.0",
     "reflect-metadata": "^0.1.10",
-    "typeorm": "^0.2.8",
-    "uuid": "^3.3.2"
+    "typeorm": "^0.2.8"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
@@ -33,10 +32,12 @@
     "@types/pg": "^7.4.11",
     "@types/uuid": "^3.4.4",
     "apollo": "^1.9.2",
+    "babel-jest": "^23.6.0",
     "es6-shim": "^0.35.3",
     "gql2ts": "^1.10.1",
     "graphql-request": "^1.8.2",
     "jest": "^23.6.0",
+    "jest-environment-node": "^23.4.0",
     "nodemon": "^1.18.4",
     "prettier": "1.14.3",
     "start-server-and-test": "^1.7.5",
