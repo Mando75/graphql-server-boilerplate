@@ -14,7 +14,7 @@ const user = `{
   lastName: "Norris"
 }`;
 
-const mutation = `
+const mutation = (user: string) => `
   mutation {
     registerUser(user: ${user}) {
       path
@@ -36,12 +36,12 @@ beforeAll(async () => {
 
 describe("Registering a new user", async () => {
   it("Registers a user properly", async () => {
-    const resp: any = await request(global.host, mutation);
+    const resp: any = await request(global.host, mutation(user));
     expect(resp.registerUser).toBe(null);
   });
 
   it("Can't register the same user twice", async () => {
-    const { registerUser }: any = await request(global.host, mutation);
+    const { registerUser }: any = await request(global.host, mutation(user));
     expect(registerUser).toHaveLength(1);
     expect(registerUser[0].path).toEqual("email");
     expect(registerUser[0].message).toEqual("already exists");
