@@ -7,7 +7,7 @@ import {
   BaseEntity,
   PrimaryGeneratedColumn
 } from "typeorm";
-import { accountType } from "../enums/accountType.enum";
+import { AccountType } from "../enums/accountType.enum";
 
 @Entity("users")
 export class User extends BaseEntity {
@@ -32,8 +32,8 @@ export class User extends BaseEntity {
   @Column("text")
   password: string;
 
-  @Column("enum", { enum: accountType })
-  accountType: accountType;
+  @Column("enum", { enum: AccountType })
+  accountType: AccountType;
 
   @Column("boolean", { default: true })
   active: boolean;

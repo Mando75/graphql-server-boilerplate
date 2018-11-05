@@ -1,4 +1,7 @@
 import { gql } from "apollo-server";
+import * as yup from "yup";
+import { ErrorMessages } from "../../enums/errorMessages";
+
 export const typeDefs = gql`
   input UserRegistrationType {
     email: String!
@@ -11,3 +14,23 @@ export const typeDefs = gql`
     registerUser(user: UserRegistrationType): [GraphQLError!]
   }
 `;
+
+export const yupUserRegistrationSchema = yup.object().shape({
+  email: yup
+    .string()
+    .min(6, ErrorMessages.EMAIL_TOO_SHORT)
+    .max(255, ErrorMessages.EMAIL_TOO_LONG)
+    .email(ErrorMessages.EMAIL_INVALID_EMAIL),
+  password: yup
+    .string()
+    .min(8)
+    .max(255),
+  firstName: yup
+    .string()
+    .min(1)
+    .max(255),
+  lastName: yup
+    .string()
+    .min(1)
+    .max(255)
+});

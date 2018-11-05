@@ -1,7 +1,7 @@
 import { registerUser, userExists } from "../lib";
 import { CreateTypeORMConnection } from "../../../utils/CreateTypeORMConnection";
 import { Connection } from "typeorm";
-import { accountType } from "../../../enums/accountType.enum";
+import { AccountType } from "../../../enums/accountType.enum";
 
 let db: Connection;
 
@@ -22,7 +22,7 @@ describe("The register function", async () => {
     const newUser = await registerUser({
       user,
       hashedPwd,
-      accountType: accountType.USER
+      accountType: AccountType.USER
     });
     expect(newUser).toMatchObject({
       ...user,

@@ -1,4 +1,4 @@
-export enum accountType {
+export enum AccountType {
   ADMIN = "admin",
   USER = "user"
 }

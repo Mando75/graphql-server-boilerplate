@@ -1,5 +1,5 @@
 import { User } from "../../entity/User";
-import { accountType } from "../../enums/accountType.enum";
+import { AccountType } from "../../enums/accountType.enum";
 
 /**
  * Checks if user already exists based upon email address
@@ -16,7 +16,7 @@ export const userExists = async (email: string) => {
 
 /**
  * Creates a new user in the database. Expects a user object with prehashed
- * password and accountType.
+ * password and AccountType.
  * @param Object with
  * @param user
  * @param hashedPwd
@@ -29,7 +29,7 @@ export const registerUser = async ({
 }: {
   user: GQL.IUserRegistrationType;
   hashedPwd: string;
-  accountType: accountType;
+  accountType: AccountType;
 }) => {
   return await User.create({
     ...user,

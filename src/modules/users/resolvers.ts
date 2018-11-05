@@ -1,8 +1,11 @@
 import { hash } from "bcrypt";
-import { accountType } from "../../enums/accountType.enum";
+import { AccountType } from "../../enums/accountType.enum";
 import { ResolverMap } from "../../types/graphql-utils";
 import { registerUser, userExists } from "./lib";
 import IUserRegistrationType = GQL.IUserRegistrationType;
+import { yupUserRegistrationSchema } from "./schema.graphql";
+import { formatYupError } from "../../utils/formatYupError";
+import { ErrorMessages } from "../../enums/errorMessages";
 
 export const resolvers: ResolverMap = {
   Mutation: {
@@ -15,11 +18,16 @@ export const resolvers: ResolverMap = {
      */
     async registerUser(_: any, { user }: { user: IUserRegistrationType }) {
       try {
+        await yupUserRegistrationSchema.validate(user, { abortEarly: false });
+      } catch (err) {
+        return formatYupError(err);
+      }
+      try {
         if (await userExists(user.email)) {
           return [
             {
               path: "email",
-              message: "already exists"
+              message: ErrorMessages.EMAIL_DUPLICATE
             }
           ];
         }
@@ -29,7 +37,7 @@ export const resolvers: ResolverMap = {
         await registerUser({
           user,
           hashedPwd,
-          accountType: accountType.USER
+          accountType: AccountType.USER
         });
         return null;
       } catch (err) {

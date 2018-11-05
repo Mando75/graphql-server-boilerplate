@@ -6,13 +6,7 @@ import {
 } from "../../../utils/bootstrapConnections";
 import { ServerInfo } from "apollo-server";
 import { Connection } from "typeorm";
-
-const user = `{
-  email: "chucknorris@chuck.com",
-  password: "chucknorris",
-  firstName: "Chuck",
-  lastName: "Norris"
-}`;
+import { ErrorMessages } from "../../../enums/errorMessages";
 
 const mutation = (user: string) => `
   mutation {
@@ -22,6 +16,18 @@ const mutation = (user: string) => `
     }
   }
 `;
+
+const user = ({
+  email = "chucknorris@chuck.com",
+  pwd = "chucknorris",
+  first = "Chuck",
+  last = "Chuck"
+}: any) => `{
+  email: "${email}",
+  password: "${pwd}",
+  firstName: "${first}",
+  lastName: "${last}"
+}`;
 
 let app: ServerInfo;
 let db: Connection;
@@ -36,15 +42,49 @@ beforeAll(async () => {
 
 describe("Registering a new user", async () => {
   it("Registers a user properly", async () => {
-    const resp: any = await request(global.host, mutation(user));
+    const resp: any = await request(global.host, mutation(user({})));
     expect(resp.registerUser).toBe(null);
   });
 
   it("Can't register the same user twice", async () => {
-    const { registerUser }: any = await request(global.host, mutation(user));
+    const { registerUser }: any = await request(
+      global.host,
+      mutation(user({}))
+    );
     expect(registerUser).toHaveLength(1);
     expect(registerUser[0].path).toEqual("email");
-    expect(registerUser[0].message).toEqual("already exists");
+    expect(registerUser[0].message).toEqual(ErrorMessages.EMAIL_DUPLICATE);
+  });
+
+  it("catches an invalid email", async () => {
+    const { registerUser }: any = await request(
+      global.host,
+      mutation(user({ email: "bademail" }))
+    );
+    expect(registerUser).toHaveLength(1);
+    expect(registerUser[0].path).toEqual("email");
+    expect(registerUser[0].message).toEqual(ErrorMessages.EMAIL_INVALID_EMAIL);
+  });
+
+  it("catches short email", async () => {
+    let { registerUser }: any = await request(
+      global.host,
+      mutation(user({ email: "1@a.c" }))
+    );
+    expect(registerUser).toHaveLength(1);
+    expect(registerUser[0].path).toEqual("email");
+    expect(registerUser[0].message).toEqual(ErrorMessages.EMAIL_TOO_SHORT);
+  });
+
+  it("catches long email", async () => {
+    const invalidEmail = `${new Array(255).join("a")}@chuck.com`;
+    let { registerUser }: any = await request(
+      global.host,
+      mutation(user({ email: invalidEmail }))
+    );
+    expect(registerUser).toHaveLength(1);
+    expect(registerUser[0].path).toEqual("email");
+    expect(registerUser[0].message).toEqual(ErrorMessages.EMAIL_TOO_LONG);
   });
 });
 
