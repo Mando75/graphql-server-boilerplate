@@ -1,21 +1,30 @@
-import { ApolloServer, ServerInfo } from "apollo-server";
+import { ApolloServer } from "apollo-server-express";
 import { makeSchema } from "./makeSchema";
 import { CreateTypeORMConnection } from "./CreateTypeORMConnection";
 import { Connection } from "typeorm";
 import { GraphQLSchema } from "graphql";
+import { Server } from "http";
+import * as express from "express";
 
-// @ts-ignore
 /**
  * Try to bootstrap a database and server connection. If successful,
  * returns the db and server connection instances in an object
  * @param port -> Http server will liston on this port
  */
 export const bootstrapConnections = async (port: number) => {
-  let db: Connection, app: ServerInfo;
+  let db: Connection, app: Server;
+  const server = express();
+
   try {
+    // Connect to Database
     db = await CreateTypeORMConnection();
+    console.log(`Connected to db ${db.options.database}`);
+
+    // Load GraphQL Schema files
     const schema: GraphQLSchema = await makeSchema();
-    const server = new ApolloServer({
+
+    // Start Apollo Server
+    const apolloServer = new ApolloServer({
       schema,
       formatError: (error: Error) => {
         console.log(error);
@@ -26,12 +35,12 @@ export const bootstrapConnections = async (port: number) => {
         return response;
       }
     });
-    console.log(`Connected to db ${db.options.database}`);
+    apolloServer.applyMiddleware({ app: server, path: "/graphql" });
     app = await server.listen({
-      port: port
+      port
     });
 
-    console.log(`🚀  Server ready at ${app.url}: Happy Coding!`);
+    console.log(`🚀  Server ready at ${port}: Happy Coding!`);
     return { app, db };
   } catch (e) {
     console.error("Could not bootstrap server connections. Exiting", e);

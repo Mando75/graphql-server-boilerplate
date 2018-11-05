@@ -4,7 +4,7 @@ import {
   bootstrapConnections,
   normalizePort
 } from "../../../utils/bootstrapConnections";
-import { ServerInfo } from "apollo-server";
+import { Server } from "http";
 import { Connection } from "typeorm";
 import { ErrorMessages } from "../../../enums/errorMessages";
 
@@ -29,7 +29,7 @@ const user = ({
   lastName: "${last}"
 }`;
 
-let app: ServerInfo;
+let app: Server;
 let db: Connection;
 
 beforeAll(async () => {
@@ -100,5 +100,5 @@ describe("Registering a new user", async () => {
 
 afterAll(async () => {
   await db.close();
-  app.server.close();
+  app.close();
 });

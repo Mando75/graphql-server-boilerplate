@@ -2,7 +2,7 @@ module.exports = {
   verbose: false,
   globals: {
     port: 4001,
-    host: 'http://localhost:4001'
+    host: 'http://localhost:4001/graphql'
   },
   transform: {
     "^^.+\\.tsx?$": "ts-jest",

@@ -390,10 +390,15 @@
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
   integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
 
-"@types/node@*", "@types/node@^10.1.0", "@types/node@^10.12.0":
+"@types/node@*", "@types/node@^10.1.0":
   version "10.12.0"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.0.tgz#ea6dcbddbc5b584c83f06c60e82736d8fbb0c235"
   integrity sha512-3TUHC3jsBAB7qVRGxT6lWyYo2v96BMmD2PTcl47H25Lu7UXtFH/2qqmKiVrnel6Ne//0TFYf6uvNX+HW2FRkLQ==
+
+"@types/node@^10.12.2":
+  version "10.12.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.2.tgz#d77f9faa027cadad9c912cd47f4f8b07b0fb0864"
+  integrity sha512-53ElVDSnZeFUUFIYzI8WLQ25IhWzb6vbddNp8UHlXQyU0ET2RhV5zg0NfubzU7iNMh5bBXb0htCzfvrSVNgzaQ==
 
 "@types/pg-types@*":
   version "1.11.4"
@@ -792,17 +797,6 @@ apollo-server-express@^2.1.0:
     graphql-subscriptions "^0.5.8"
     graphql-tools "^3.0.4"
     type-is "^1.6.16"
-
-apollo-server@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/apollo-server/-/apollo-server-2.1.0.tgz#abec7853647c59f386087352cc7f06a4f1f8afe2"
-  integrity sha512-Uo5RFHGtUPq3OvycLXCll5QgXf2wNVBFYUhapByADBP4E1KRgbyl9Fbf82OgcbbLYwEZTlQMbyBpd6hX8XJKAw==
-  dependencies:
-    apollo-server-core "^2.1.0"
-    apollo-server-express "^2.1.0"
-    express "^4.0.0"
-    graphql-subscriptions "^0.5.8"
-    graphql-tools "^3.0.4"
 
 apollo-tracing@^0.2.5:
   version "0.2.5"
@@ -2263,7 +2257,7 @@ expect@^23.6.0:
     jest-message-util "^23.4.0"
     jest-regex-util "^23.3.0"
 
-express@^4.0.0:
+express@^4.16.4:
   version "4.16.4"
   resolved "https://registry.yarnpkg.com/express/-/express-4.16.4.tgz#fddef61926109e24c515ea97fd2f1bdbf62df12e"
   integrity sha512-j12Uuyb4FMrd/qQAm6uCHAkPtO8FDTRJZBDd5D2KOL2eLaz1yUNdUB/NOIyq0iU4q4cFarsUCrnFDPBcnksuOg==
