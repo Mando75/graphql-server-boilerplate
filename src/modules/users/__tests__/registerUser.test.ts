@@ -19,7 +19,7 @@ const mutation = (user: string) => `
 
 const user = ({
   email = "chucknorris@chuck.com",
-  pwd = "chucknorris",
+  pwd = "Password1!",
   first = "Chuck",
   last = "Chuck"
 }: any) => `{
@@ -67,7 +67,7 @@ describe("Registering a new user", async () => {
   });
 
   it("catches short email", async () => {
-    let { registerUser }: any = await request(
+    const { registerUser }: any = await request(
       global.host,
       mutation(user({ email: "1@a.c" }))
     );
@@ -78,13 +78,23 @@ describe("Registering a new user", async () => {
 
   it("catches long email", async () => {
     const invalidEmail = `${new Array(255).join("a")}@chuck.com`;
-    let { registerUser }: any = await request(
+    const { registerUser }: any = await request(
       global.host,
       mutation(user({ email: invalidEmail }))
     );
     expect(registerUser).toHaveLength(1);
     expect(registerUser[0].path).toEqual("email");
     expect(registerUser[0].message).toEqual(ErrorMessages.EMAIL_TOO_LONG);
+  });
+
+  it("catches invalid password", async () => {
+    const { registerUser }: any = await request(
+      global.host,
+      mutation(user({ pwd: "badpassword", email: "new@mail.com" }))
+    );
+    expect(registerUser).toHaveLength(1);
+    expect(registerUser[0].path).toEqual("password");
+    expect(registerUser[0].message).toEqual(ErrorMessages.PASSWORD_TOO_SIMPLE);
   });
 });
 
