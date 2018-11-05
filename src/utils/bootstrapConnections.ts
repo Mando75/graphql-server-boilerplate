@@ -5,7 +5,10 @@ import { Connection } from "typeorm";
 import { GraphQLSchema } from "graphql";
 import { Server } from "http";
 import * as express from "express";
+import routes from "./expressRoutes";
+import * as Redis from "ioredis";
 
+export const redis = new Redis();
 /**
  * Try to bootstrap a database and server connection. If successful,
  * returns the db and server connection instances in an object
@@ -14,7 +17,7 @@ import * as express from "express";
 export const bootstrapConnections = async (port: number) => {
   let db: Connection, app: Server;
   const server = express();
-
+  server.use(routes);
   try {
     // Connect to Database
     db = await CreateTypeORMConnection();
@@ -33,7 +36,11 @@ export const bootstrapConnections = async (port: number) => {
       formatResponse: (response: Response) => {
         console.log(response);
         return response;
-      }
+      },
+      context: ({ req }: any) => ({
+        redis,
+        url: `${req.protocol}://${req.get("host")}`
+      })
     });
     apolloServer.applyMiddleware({ app: server, path: "/graphql" });
     app = await server.listen({
