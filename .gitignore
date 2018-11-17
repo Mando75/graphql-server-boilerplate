@@ -10,3 +10,4 @@ graphql.schema.json
 coverage/
 yarn-error.log
 dump.rdb
+.env
