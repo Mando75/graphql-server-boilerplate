@@ -28,4 +28,5 @@ build:
   - rm -rf .yarn
   - yarn install
   script:
+  - yarn run gen-types
   - yarn build

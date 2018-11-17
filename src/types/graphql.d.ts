@@ -21,7 +21,7 @@ declare namespace GQL {
   }
 
   interface IQuery {
-    __typename: 'Query';
+    __typename: "Query";
     books: Array<IBook | null> | null;
   }
 
@@ -31,13 +31,13 @@ declare namespace GQL {
   }
 
   interface IBook {
-    __typename: 'Book';
+    __typename: "Book";
     title: string | null;
     author: string | null;
   }
 
   interface IMutation {
-    __typename: 'Mutation';
+    __typename: "Mutation";
     _empty: boolean | null;
     registerUser: Array<IGraphQLError> | null;
   }
@@ -54,7 +54,7 @@ declare namespace GQL {
   }
 
   interface IGraphQLError {
-    __typename: 'GraphQLError';
+    __typename: "GraphQLError";
     path: string;
     message: string;
   }
