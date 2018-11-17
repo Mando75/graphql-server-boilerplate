@@ -39,6 +39,7 @@ declare namespace GQL {
   interface IMutation {
     __typename: "Mutation";
     _empty: boolean | null;
+    sendEmail: boolean | null;
     registerUser: Array<IGraphQLError> | null;
   }
 

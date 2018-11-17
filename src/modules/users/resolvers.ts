@@ -6,6 +6,7 @@ import IUserRegistrationType = GQL.IUserRegistrationType;
 import { yupUserRegistrationSchema } from "./schema.graphql";
 import { formatYupError } from "../../utils/formatYupError";
 import { ErrorMessages } from "../../enums/errorMessages";
+import { sendConfirmEmail } from "../../utils/sendEmail";
 
 export const resolvers: ResolverMap = {
   Mutation: {
@@ -47,7 +48,10 @@ export const resolvers: ResolverMap = {
         });
 
         const link = await createConfirmEmailLink(url, newUser.id, redis);
-        console.log(link);
+        await sendConfirmEmail({
+          to: user.email,
+          link
+        });
         return null;
       } catch (err) {
         console.log(err);
