@@ -14,7 +14,7 @@ let app: Server;
 let db: Connection;
 
 beforeAll(async () => {
-  const resp = await bootstrapConnections(normalizePort(global.port));
+  const resp = await bootstrapConnections(normalizePort(process.env.TEST_PORT));
   if (resp) {
     app = resp.app;
     db = resp.db;
@@ -100,6 +100,7 @@ describe("createEmailConfirmationLink", () => {
 });
 
 afterAll(async () => {
+  await redis.disconnect();
   await db.close();
-  app.close();
+  await app.close();
 });

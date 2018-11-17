@@ -8,6 +8,7 @@ import { Server } from "http";
 import { Connection } from "typeorm";
 import { ErrorMessages } from "../../../enums/errorMessages";
 
+const host = process.env.TEST_GRAPHQL_ENDPOINT as string;
 const mutation = (user: string) => `
   mutation {
     registerUser(user: ${user}) {
@@ -33,7 +34,7 @@ let app: Server;
 let db: Connection;
 
 beforeAll(async () => {
-  const resp = await bootstrapConnections(normalizePort(global.port));
+  const resp = await bootstrapConnections(normalizePort(process.env.TEST_PORT));
   if (resp) {
     app = resp.app;
     db = resp.db;
@@ -42,15 +43,12 @@ beforeAll(async () => {
 
 describe("Registering a new user", async () => {
   it("Registers a user properly", async () => {
-    const resp: any = await request(global.host, mutation(user({})));
+    const resp: any = await request(host, mutation(user({})));
     expect(resp.registerUser).toBe(null);
   });
 
   it("Can't register the same user twice", async () => {
-    const { registerUser }: any = await request(
-      global.host,
-      mutation(user({}))
-    );
+    const { registerUser }: any = await request(host, mutation(user({})));
     expect(registerUser).toHaveLength(1);
     expect(registerUser[0].path).toEqual("email");
     expect(registerUser[0].message).toEqual(ErrorMessages.EMAIL_DUPLICATE);
@@ -58,7 +56,7 @@ describe("Registering a new user", async () => {
 
   it("catches an invalid email", async () => {
     const { registerUser }: any = await request(
-      global.host,
+      host,
       mutation(user({ email: "bademail" }))
     );
     expect(registerUser).toHaveLength(1);
@@ -68,7 +66,7 @@ describe("Registering a new user", async () => {
 
   it("catches short email", async () => {
     const { registerUser }: any = await request(
-      global.host,
+      host,
       mutation(user({ email: "1@a.c" }))
     );
     expect(registerUser).toHaveLength(1);
@@ -79,7 +77,7 @@ describe("Registering a new user", async () => {
   it("catches long email", async () => {
     const invalidEmail = `${new Array(255).join("a")}@chuck.com`;
     const { registerUser }: any = await request(
-      global.host,
+      host,
       mutation(user({ email: invalidEmail }))
     );
     expect(registerUser).toHaveLength(1);
@@ -89,7 +87,7 @@ describe("Registering a new user", async () => {
 
   it("catches invalid password", async () => {
     const { registerUser }: any = await request(
-      global.host,
+      host,
       mutation(user({ pwd: "badpassword", email: "new@mail.com" }))
     );
     expect(registerUser).toHaveLength(1);
@@ -100,5 +98,5 @@ describe("Registering a new user", async () => {
 
 afterAll(async () => {
   await db.close();
-  app.close();
+  await app.close();
 });
