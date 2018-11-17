@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { redis } from "./bootstrapConnections";
+import { redis } from "../utils/bootstrapConnections";
 import { User } from "../entity/User";
 
 const router: Router = Router();
@@ -8,8 +8,7 @@ router.get("/confirm/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
   const userId = await redis.get(id);
   if (userId) {
-    await User.update({ id: userId }, { emailConfirmed: true });
-    await redis.del(id);
+    await setEmailConfirmed(id, userId);
     res.json({
       msg: "ok"
     });
@@ -20,4 +19,9 @@ router.get("/confirm/:id", async (req: Request, res: Response) => {
   }
 });
 
+const setEmailConfirmed = async (id: string, userId: string) => {
+  const updateUser = User.update({ id: userId }, { emailConfirmed: true });
+  const updateRedis = redis.del(id);
+  await Promise.all([updateUser, updateRedis]);
+};
 export default router;

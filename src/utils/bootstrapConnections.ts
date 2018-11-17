@@ -6,7 +6,7 @@ import { Connection } from "typeorm";
 import { GraphQLSchema } from "graphql";
 import { Server } from "http";
 import * as express from "express";
-import routes from "./expressRoutes";
+import { routes } from "../routes";
 import * as Redis from "ioredis";
 
 export const redis = new Redis();
