@@ -9,6 +9,7 @@ router.get("/confirm/:id", async (req: Request, res: Response) => {
   const userId = await redis.get(id);
   if (userId) {
     await User.update({ id: userId }, { emailConfirmed: true });
+    await redis.del(id);
     res.json({
       msg: "ok"
     });

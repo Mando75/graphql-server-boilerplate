@@ -1,5 +1,5 @@
 module.exports = {
-  verbose: false,
+  verbose: true,
   globals: {
     port: 4001,
     host: 'http://localhost:4001/graphql'
@@ -10,4 +10,5 @@ module.exports = {
   testPathIgnorePatterns: ["/node_modules/", "/dist/"],
   testRegex: "/__tests__/.*.test.(js|ts|tsx)?$",
   moduleFileExtensions: ["ts", "tsx", "js", "json", "node"],
+  globalSetup: './jest/globalSetup.js'
 };
