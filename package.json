@@ -7,9 +7,7 @@
     "run": "NODE_ENV=development nodemon --watch ./dist ./dist/index.js",
     "test": "NODE_ENV=test jest --coverage --runInBand --detectOpenHandles",
     "test-with-coverage": "yarn test && cat ./coverage/lcov.info | codacy-coverage",
-    "gen-types": "yarn run schema:download && yarn run schema:generate-types",
-    "schema:download": "apollo schema:download --endpoint=http://localhost:4000",
-    "schema:generate-types": "gql2ts schema.json -o src/types/graphql.d.ts"
+    "gen-types": "yarn run ts-node --project ./tsconfig.json --files ./scripts/genSchema.ts"
   },
   "description": "Boilerplate for setting up a GraphQL Server with Typescript, TypeORM, Postgresql and Jest",
   "main": "index.js",
@@ -31,6 +29,7 @@
     "yup": "^0.26.6"
   },
   "devDependencies": {
+    "@gql2ts/from-schema": "^1.10.1",
     "@types/bcrypt": "^3.0.0",
     "@types/graphql": "^14.0.3",
     "@types/ioredis": "^4.0.3",

@@ -1,3 +1,4 @@
+// tslint:disable
 // graphql typescript definitions
 
 declare namespace GQL {
@@ -20,7 +21,7 @@ declare namespace GQL {
   }
 
   interface IQuery {
-    __typename: "Query";
+    __typename: 'Query';
     books: Array<IBook | null> | null;
   }
 
@@ -30,14 +31,15 @@ declare namespace GQL {
   }
 
   interface IBook {
-    __typename: "Book";
+    __typename: 'Book';
     title: string | null;
     author: string | null;
   }
 
   interface IMutation {
-    __typename: "Mutation";
-    registerUser: boolean | null;
+    __typename: 'Mutation';
+    _empty: boolean | null;
+    registerUser: Array<IGraphQLError> | null;
   }
 
   interface IRegisterUserOnMutationArguments {
@@ -49,6 +51,12 @@ declare namespace GQL {
     password: string;
     firstName: string;
     lastName: string;
+  }
+
+  interface IGraphQLError {
+    __typename: 'GraphQLError';
+    path: string;
+    message: string;
   }
 }
 

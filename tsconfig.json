@@ -10,6 +10,10 @@
       "es2017",
       "esnext"
     ],
+    "typeRoots": [
+      "./src/types",
+      "./node_modules/@types"
+    ],
     "sourceMap": true,
     "rootDir": "./src",
     "outDir": "./dist",
