@@ -19,6 +19,8 @@ test:
   script:
   - yarn lint --fix
   - yarn test-with-coverage
+  only:
+  - test-deploy
 
 build:
   stage: build
