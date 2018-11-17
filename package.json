@@ -53,6 +53,7 @@
     "nock": "^10.0.2",
     "nodemon": "^1.18.4",
     "prettier": "1.14.3",
+    "pretty-quick": "^1.8.0",
     "start-server-and-test": "^1.7.5",
     "ts-jest": "^23.10.4",
     "ts-node": "7.0.1",
