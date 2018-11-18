@@ -1,6 +1,11 @@
 import * as sgMail from "@sendgrid/mail";
 sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
+/**
+ * Sends a confirmation email through the SendGrid API
+ * @param to
+ * @param link
+ */
 export const sendConfirmEmail = async ({
   to,
   link
