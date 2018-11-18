@@ -15,6 +15,7 @@ export const sendConfirmEmail = async ({
 }) => {
   const msg = {
     to,
+    // TODO move to another email
     from: "bryanmullerdev@gmail.com",
     subject: "Please confirm your email",
     html: `<html>
