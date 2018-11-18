@@ -1,3 +1,4 @@
+// Routes file
 import { Router } from "express";
 import confirmEmail from "./confirmEmail";
 
