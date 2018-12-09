@@ -163,7 +163,10 @@ describe("Logging in a user", () => {
   });
 
   it("catches bad email", async () => {
-    const response = await request(host, loginMutation("bad email", password));
+    const response = await request(
+      host,
+      loginMutation("bad@email.com", password)
+    );
     expect(response).toEqual({
       login: [
         {
