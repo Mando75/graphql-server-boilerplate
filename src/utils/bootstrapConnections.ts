@@ -26,6 +26,7 @@ export const bootstrapConnections = async (port: number) => {
   try {
     // Connect to Database
     db = await CreateTypeORMConnection();
+    // await db.runMigrations();
     console.log(`Connected to db ${db.options.database}`);
 
     // Load GraphQL Schema files
