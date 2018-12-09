@@ -69,7 +69,7 @@ export const verifyLogin = async (email: string, password: string) => {
     user && (await compare(password, user.password)) ? [] : [errorResponse];
 
   // Verify that user email is confirmed
-  if (user && !user.emailConfirmed) {
+  if (user && errors.length && !user.emailConfirmed) {
     errors.push({
       path: "email",
       message: ErrorMessages.EMAIL_NOT_CONFIRMED
