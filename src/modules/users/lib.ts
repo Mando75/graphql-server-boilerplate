@@ -2,6 +2,8 @@ import { User } from "../../entity/User";
 import { AccountType } from "../../enums/accountType.enum";
 import { Redis } from "ioredis";
 import { v4 } from "uuid";
+import { ErrorMessages } from "./errorMessages";
+import { compare } from "bcrypt";
 
 /**
  * Checks if user already exists based upon email address
@@ -54,4 +56,24 @@ export const createConfirmEmailLink = async (
   const id = v4();
   await redis.set(id, userId, "ex", 60 * 60 * 24);
   return `${url}/confirm/${id}`;
+};
+
+export const verifyLogin = async (email: string, password: string) => {
+  const errorResponse = {
+    path: "email",
+    message: ErrorMessages.INVALID_LOGIN
+  };
+  const user = await User.findOne({ email });
+  // Verify user exists and password matches
+  const errors =
+    user && (await compare(password, user.password)) ? [] : [errorResponse];
+
+  // Verify that user email is confirmed
+  if (user && !user.emailConfirmed) {
+    errors.push({
+      path: "email",
+      message: ErrorMessages.EMAIL_NOT_CONFIRMED
+    });
+  }
+  return errors;
 };
