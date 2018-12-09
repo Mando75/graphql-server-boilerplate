@@ -40,10 +40,15 @@ declare namespace GQL {
     __typename: "Mutation";
     _empty: boolean | null;
     registerUser: Array<IGraphQLError> | null;
+    login: Array<IGraphQLError> | null;
   }
 
   interface IRegisterUserOnMutationArguments {
     user?: IUserRegistrationType | null;
+  }
+
+  interface ILoginOnMutationArguments {
+    user?: IUserLoginType | null;
   }
 
   interface IUserRegistrationType {
@@ -57,6 +62,11 @@ declare namespace GQL {
     __typename: "GraphQLError";
     path: string;
     message: string;
+  }
+
+  interface IUserLoginType {
+    email: string;
+    password: string;
   }
 }
 
