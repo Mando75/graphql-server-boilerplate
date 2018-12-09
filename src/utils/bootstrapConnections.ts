@@ -7,6 +7,8 @@ import { Connection } from "typeorm";
 import { GraphQLSchema } from "graphql";
 import { Server } from "http";
 import * as express from "express";
+import * as session from "express-session";
+import * as connectRedis from "connect-redis";
 import { routes } from "../routes";
 import * as Redis from "ioredis";
 
@@ -19,6 +21,7 @@ export const redis = new Redis();
 export const bootstrapConnections = async (port: number) => {
   let db: Connection, app: Server;
   const server = express();
+  server.use(session(createSession()));
   server.use(routes);
   try {
     // Connect to Database
@@ -31,20 +34,12 @@ export const bootstrapConnections = async (port: number) => {
     // Start Apollo Server
     const apolloServer = new ApolloServer({
       schema,
-      formatError: (error: Error) => {
-        console.log(error);
-        return error;
-      },
-      formatResponse: (response: Response) => {
-        console.log(response);
-        return response;
-      },
-      context: ({ req }: any) => ({
-        redis,
-        url: `${req.protocol}://${req.get("host")}`
-      })
+      formatError,
+      formatResponse,
+      context: setContext
     });
-    apolloServer.applyMiddleware({ app: server, path: "/graphql" });
+
+    apolloServer.applyMiddleware({ app: server, path: "/graphql", cors });
     app = await server.listen({
       port
     });
@@ -70,4 +65,60 @@ export const normalizePort = (val: any) => {
   if (port >= 0) return port;
 
   return false;
+};
+
+/**
+ * Return the context object for Apollo requests
+ * @param req
+ */
+const setContext = ({ req }: any) => ({
+  redis,
+  url: `${req.protocol}://${req.get("host")}`,
+  session: req.session
+});
+/**
+ * Request response formatting
+ * @param response
+ */
+const formatResponse = (response: Response) => {
+  console.log(response);
+  return response;
+};
+
+/**
+ * Formatting error response
+ * @param error
+ */
+const formatError = (error: Error) => {
+  console.log(error);
+  return error;
+};
+
+/**
+ * Configuration for session storage
+ */
+const createSession = () => {
+  const RedisStore = connectRedis(session);
+  return {
+    store: new RedisStore({
+      client: redis as any
+    }),
+    name: "bid",
+    secret: process.env.SESSION_SECRET as string,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+    }
+  };
+};
+
+/**
+ * Cors configuration
+ */
+const cors = {
+  credentials: true,
+  origin: (process.env.HOST || process.env.TEST_HOST) as string
 };

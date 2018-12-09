@@ -12,6 +12,7 @@ import { yupUserLoginSchema, yupUserRegistrationSchema } from "./yup.schema";
 import { formatYupError } from "../../utils/formatYupError";
 import { ErrorMessages } from "./errorMessages";
 import { sendConfirmEmail } from "../../utils/sendEmail";
+import { User } from "../../entity/User";
 
 export const resolvers: ResolverMap = {
   Mutation: {
@@ -67,16 +68,20 @@ export const resolvers: ResolverMap = {
         ];
       }
     },
-    async login(_: any, { user }: { user: GQL.IUserLoginType }) {
+    async login(_: any, { user }: { user: GQL.IUserLoginType }, { session }) {
       try {
         await yupUserLoginSchema.validate(user, { abortEarly: false });
       } catch (err) {
         return formatYupError(err);
       }
-      const errors = await verifyLogin(user.email, user.password);
+      const loginAttempt = await User.findOne({ email: user.email });
+      const errors = await verifyLogin(loginAttempt as User, user.password);
       if (errors.length) {
         return errors;
       }
+
+      session.userId = loginAttempt!.id;
+
       return null;
     }
   }

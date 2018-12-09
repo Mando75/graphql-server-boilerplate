@@ -8,8 +8,13 @@ export interface ResolverMap {
       context: {
         redis: Redis;
         url: string;
+        session: Session;
       },
       info: any
     ) => any;
   };
+}
+
+export interface Session {
+  userId?: string;
 }

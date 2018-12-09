@@ -5,7 +5,7 @@ import { AccountType } from "../../../enums/accountType.enum";
 import { User } from "../../../entity/User";
 import { Server } from "http";
 import * as Redis from "ioredis";
-import * as fetch from "node-fetch";
+import fetch from "node-fetch";
 import {
   bootstrapConnections,
   normalizePort
