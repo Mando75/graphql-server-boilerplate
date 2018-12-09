@@ -6,7 +6,7 @@ import {
 } from "../../../utils/bootstrapConnections";
 import { Server } from "http";
 import { Connection } from "typeorm";
-import { ErrorMessages } from "../../../enums/errorMessages";
+import { ErrorMessages } from "../errorMessages";
 
 const host = process.env.TEST_GRAPHQL_ENDPOINT as string;
 const mutation = (user: string) => `

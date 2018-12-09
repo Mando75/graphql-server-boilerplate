@@ -1,4 +1,5 @@
-import { registerUser, userExists, createConfirmEmailLink } from "../lib";
+import { createConfirmEmailLink, registerUser, userExists } from "../lib";
+import { request } from "graphql-request";
 import { Connection } from "typeorm";
 import { AccountType } from "../../../enums/accountType.enum";
 import { User } from "../../../entity/User";
@@ -9,9 +10,12 @@ import {
   bootstrapConnections,
   normalizePort
 } from "../../../utils/bootstrapConnections";
+import { hash } from "bcrypt";
+import { ErrorMessages } from "../errorMessages";
 
 let app: Server;
 let db: Connection;
+const host = process.env.TEST_GRAPHQL_ENDPOINT as string;
 
 beforeAll(async () => {
   const resp = await bootstrapConnections(normalizePort(process.env.TEST_PORT));
@@ -96,6 +100,78 @@ describe("createEmailConfirmationLink", () => {
     const response = await fetch(`http://localhost:4001/confirm/12083`);
     const { msg } = await response.json();
     expect(msg).toEqual("invalid");
+  });
+});
+
+describe("Logging in a user", () => {
+  const password = "logintestpassword";
+  const email = "dylantestingtonlogin@myemail.com";
+  const loginMutation = (email: string, password: string) => `
+    mutation {
+      login(user: { email: "${email}", password: "${password}" }) {
+        message
+        path
+      }
+    }`;
+  beforeAll(async () => {
+    const hashed = await hash(password, 10);
+    const user = {
+      email,
+      firstName: "Dylan",
+      lastName: "Testington",
+      password
+    };
+    await registerUser({
+      user,
+      hashedPwd: hashed,
+      accountType: AccountType.USER
+    });
+  });
+
+  it("catches no email confirmation", async () => {
+    const response = await request(host, loginMutation(email, password));
+    expect(response).toEqual({
+      login: [
+        {
+          path: "email",
+          message: ErrorMessages.EMAIL_NOT_CONFIRMED
+        }
+      ]
+    });
+  });
+
+  it("verifies proper login", async () => {
+    const user = await User.findOne({ email });
+    if (user) {
+      user.emailConfirmed = true;
+      await user.save();
+    }
+    const response = await request(host, loginMutation(email, password));
+    expect(response).toEqual({ login: null });
+  });
+
+  it("catches bad password", async () => {
+    const response = await request(host, loginMutation(email, "bad password"));
+    expect(response).toEqual({
+      login: [
+        {
+          path: "email",
+          message: ErrorMessages.INVALID_LOGIN
+        }
+      ]
+    });
+  });
+
+  it("catches bad email", async () => {
+    const response = await request(host, loginMutation("bad email", password));
+    expect(response).toEqual({
+      login: [
+        {
+          path: "email",
+          message: ErrorMessages.INVALID_LOGIN
+        }
+      ]
+    });
   });
 });
 
