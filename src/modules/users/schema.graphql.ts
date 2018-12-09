@@ -1,6 +1,6 @@
 import { gql } from "apollo-server-express";
 import * as yup from "yup";
-import { ErrorMessages } from "../../enums/errorMessages";
+import { ErrorMessages } from "./errorMessages";
 
 export const typeDefs = gql`
   input UserRegistrationType {
@@ -10,8 +10,14 @@ export const typeDefs = gql`
     lastName: String!
   }
 
+  input UserLoginType {
+    email: String!
+    password: String!
+  }
+
   extend type Mutation {
     registerUser(user: UserRegistrationType): [GraphQLError!]
+    login(user: UserLoginType): [GraphQLError!]
   }
 `;
 
@@ -26,7 +32,7 @@ export const yupUserRegistrationSchema = yup.object().shape({
     .min(8, ErrorMessages.PASSWORD_TOO_SHORT)
     .max(255, ErrorMessages.PASSWORD_TOO_LONG)
     .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/,
       ErrorMessages.PASSWORD_TOO_SIMPLE
     ),
 

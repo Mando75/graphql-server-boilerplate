@@ -1,11 +1,16 @@
 import { hash } from "bcrypt";
 import { AccountType } from "../../enums/accountType.enum";
 import { ResolverMap } from "../../types/graphql-utils";
-import { createConfirmEmailLink, registerUser, userExists } from "./lib";
+import {
+  createConfirmEmailLink,
+  registerUser,
+  userExists,
+  verifyLogin
+} from "./lib";
 import IUserRegistrationType = GQL.IUserRegistrationType;
 import { yupUserRegistrationSchema } from "./schema.graphql";
 import { formatYupError } from "../../utils/formatYupError";
-import { ErrorMessages } from "../../enums/errorMessages";
+import { ErrorMessages } from "./errorMessages";
 import { sendConfirmEmail } from "../../utils/sendEmail";
 
 export const resolvers: ResolverMap = {
@@ -54,14 +59,20 @@ export const resolvers: ResolverMap = {
         });
         return null;
       } catch (err) {
-        console.log(err);
         return [
           {
             path: "register",
-            message: "user could not be registered"
+            message: ErrorMessages.GENERIC_FAILURE
           }
         ];
       }
+    },
+    async login(_: any, { user }: { user: GQL.IUserLoginType }) {
+      const errors = await verifyLogin(user.email, user.password);
+      if (errors.length) {
+        return errors;
+      }
+      return null;
     }
   }
 };
