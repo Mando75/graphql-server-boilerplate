@@ -8,7 +8,7 @@ import {
   verifyLogin
 } from "./lib";
 import IUserRegistrationType = GQL.IUserRegistrationType;
-import { yupUserRegistrationSchema } from "./schema.graphql";
+import { yupUserLoginSchema, yupUserRegistrationSchema } from "./yup.schema";
 import { formatYupError } from "../../utils/formatYupError";
 import { ErrorMessages } from "./errorMessages";
 import { sendConfirmEmail } from "../../utils/sendEmail";
@@ -68,6 +68,11 @@ export const resolvers: ResolverMap = {
       }
     },
     async login(_: any, { user }: { user: GQL.IUserLoginType }) {
+      try {
+        await yupUserLoginSchema.validate(user, { abortEarly: false });
+      } catch (err) {
+        return formatYupError(err);
+      }
       const errors = await verifyLogin(user.email, user.password);
       if (errors.length) {
         return errors;
