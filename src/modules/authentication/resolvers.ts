@@ -1,13 +1,12 @@
-import { hash } from "bcrypt";
 import { AccountType } from "../../enums/accountType.enum";
-import { ResolverMap, Session } from "../../types/graphql-utils";
+import { ResolverMap } from "../../types/graphql-utils";
+import { Session } from "../../types/context";
 import {
   createConfirmEmailLink,
   registerUser,
   userExists,
   verifyLogin
 } from "./lib";
-import IUserRegistrationType = GQL.IUserRegistrationType;
 import { yupUserLoginSchema, yupUserRegistrationSchema } from "./yup.schema";
 import { formatYupError } from "../../utils/formatYupError";
 import { ErrorMessages } from "./errorMessages";
@@ -15,6 +14,15 @@ import { sendConfirmEmail } from "../../utils/sendEmail";
 import { User } from "../../entity/User";
 
 export const resolvers: ResolverMap = {
+  Query: {
+    me: async (_: any, __: any, { session }: { session: Session }) => {
+      console.log(session.userId);
+      return await User.findOne({
+        select: ["id", "email"],
+        where: { id: session.userId }
+      });
+    }
+  },
   Mutation: {
     /**
      * TODO: Return type User
@@ -27,7 +35,7 @@ export const resolvers: ResolverMap = {
      */
     async registerUser(
       _: any,
-      { user }: { user: IUserRegistrationType },
+      { user }: { user: GQL.IUserRegistrationType },
       { redis, url }
     ) {
       try {
@@ -45,11 +53,8 @@ export const resolvers: ResolverMap = {
           ];
         }
 
-        // hash password before insertion
-        const hashedPwd = await hash(user.password, 10);
         const newUser = await registerUser({
           user,
-          hashedPwd,
           accountType: AccountType.USER
         });
 

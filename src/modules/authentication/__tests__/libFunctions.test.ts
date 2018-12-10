@@ -30,18 +30,17 @@ describe("The register function", async () => {
     lastName: "Testington",
     password: "THIS IS NOT A HASHED PASSWORD"
   };
-  const hashedPwd = "THIS IS A HASHED PASSWORD";
 
   it("Registers a user correctly", async () => {
     const newUser = await registerUser({
       user,
-      hashedPwd,
       accountType: AccountType.USER
     });
+    newUser.password = "";
     expect(newUser).toMatchObject({
       ...user,
-      password: "THIS IS A HASHED PASSWORD",
       accountType: "user",
+      password: "",
       active: true,
       accountLocked: false,
       acceptedToS: false,

@@ -9,7 +9,6 @@ import {
   bootstrapConnections,
   normalizePort
 } from "../../../utils/bootstrapConnections";
-import { hash } from "bcrypt";
 import { ErrorMessages } from "../errorMessages";
 
 let app: Server;
@@ -36,7 +35,6 @@ describe("Logging in a user", () => {
       }
     }`;
   beforeAll(async () => {
-    const hashed = await hash(password, 10);
     const user = {
       email,
       firstName: "Dylan",
@@ -45,7 +43,6 @@ describe("Logging in a user", () => {
     };
     await registerUser({
       user,
-      hashedPwd: hashed,
       accountType: AccountType.USER
     });
   });

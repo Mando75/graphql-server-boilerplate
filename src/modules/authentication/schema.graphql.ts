@@ -13,6 +13,15 @@ export const typeDefs = gql`
     password: String!
   }
 
+  type Me {
+    id: ID!
+    email: String!
+  }
+
+  extend type Query {
+    me: Me
+  }
+
   extend type Mutation {
     registerUser(user: UserRegistrationType): [GraphQLError!]
     login(user: UserLoginType): [GraphQLError!]

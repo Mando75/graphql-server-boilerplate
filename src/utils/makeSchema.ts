@@ -38,5 +38,5 @@ const getRootSchema = () => {
  * @param folder
  * @param name
  */
-const filePath = (folder: string, name: string) =>
+export const filePath = (folder: string, name: string) =>
   __dirname + `/../modules/${folder}/${name}`;

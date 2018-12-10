@@ -23,6 +23,7 @@ declare namespace GQL {
   interface IQuery {
     __typename: "Query";
     books: Array<IBook | null> | null;
+    me: IMe | null;
   }
 
   interface IBooksOnQueryArguments {
@@ -36,11 +37,18 @@ declare namespace GQL {
     author: string | null;
   }
 
+  interface IMe {
+    __typename: "Me";
+    id: string;
+    email: string;
+  }
+
   interface IMutation {
     __typename: "Mutation";
     _empty: boolean | null;
     registerUser: Array<IGraphQLError> | null;
     login: Array<IGraphQLError> | null;
+    logout: boolean | null;
   }
 
   interface IRegisterUserOnMutationArguments {

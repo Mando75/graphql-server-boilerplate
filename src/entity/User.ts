@@ -4,9 +4,11 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  BeforeInsert,
   BaseEntity,
   PrimaryGeneratedColumn
 } from "typeorm";
+import { hash } from "bcrypt";
 import { AccountType } from "../enums/accountType.enum";
 
 @Entity("users")
@@ -52,4 +54,9 @@ export class User extends BaseEntity {
 
   @Column({ type: "boolean", default: false })
   emailConfirmed: boolean;
+
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await hash(this.password, 10);
+  }
 }

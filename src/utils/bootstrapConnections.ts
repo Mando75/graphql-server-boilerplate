@@ -11,6 +11,8 @@ import * as session from "express-session";
 import * as connectRedis from "connect-redis";
 import { routes } from "../routes";
 import * as Redis from "ioredis";
+import { applyMiddleware } from "graphql-middleware";
+import { createShield } from "./createShield";
 
 export const redis = new Redis();
 /**
@@ -30,7 +32,10 @@ export const bootstrapConnections = async (port: number) => {
     console.log(`Connected to db ${db.options.database}`);
 
     // Load GraphQL Schema files
-    const schema: GraphQLSchema = await makeSchema();
+    const schema: GraphQLSchema = applyMiddleware(
+      await makeSchema(),
+      createShield()
+    );
 
     // Start Apollo Server
     const apolloServer = new ApolloServer({

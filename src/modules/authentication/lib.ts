@@ -28,16 +28,13 @@ export const userExists = async (email: string) => {
  */
 export const registerUser = async ({
   user,
-  hashedPwd,
   accountType
 }: {
   user: GQL.IUserRegistrationType;
-  hashedPwd: string;
   accountType: AccountType;
 }) => {
   return await User.create({
     ...user,
-    password: hashedPwd,
     accountType
   }).save();
 };

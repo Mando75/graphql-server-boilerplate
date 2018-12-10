@@ -1,20 +1,14 @@
-import { Redis } from "ioredis";
+import { Context } from "./context";
+
+export type Resolver = (
+  parent: any,
+  args: any,
+  context: Context,
+  info: any
+) => any;
 
 export interface ResolverMap {
   [key: string]: {
-    [key: string]: (
-      parent: any,
-      args: any,
-      context: {
-        redis: Redis;
-        url: string;
-        session: Session;
-      },
-      info: any
-    ) => any;
+    [key: string]: Resolver;
   };
-}
-
-export interface Session extends Express.Session {
-  userId?: string;
 }
