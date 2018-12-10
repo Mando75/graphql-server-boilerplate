@@ -12,8 +12,7 @@ export const makeSchema = () => {
   const typeDefsCollection = [root.typeDefs];
   const folders: string[] = fs.readdirSync(__dirname + `/../modules`);
   folders.forEach((folder: string) => {
-    const { resolvers } = require(filePath(folder, "resolvers"));
-    const { typeDefs } = require(filePath(folder, "schema.graphql"));
+    const { resolvers, typeDefs } = require(filePath(folder, "index"));
     resolversCollection.push(resolvers);
     typeDefsCollection.push(typeDefs);
   });

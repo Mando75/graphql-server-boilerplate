@@ -27,7 +27,7 @@ const loadPermissions = () => {
   const permissionsCollection = [rootPermission];
   const folders: string[] = fs.readdirSync(__dirname + `/../modules`);
   folders.forEach((folder: string) => {
-    const { permissions } = require(filePath(folder, "permissions"));
+    const { permissions } = require(filePath(folder, "index"));
     permissionsCollection.push(permissions);
   });
   return permissionsCollection;

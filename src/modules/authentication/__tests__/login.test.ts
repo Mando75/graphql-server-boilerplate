@@ -5,10 +5,7 @@ import * as Redis from "ioredis";
 import { AccountType } from "../../../enums/accountType.enum";
 import { User } from "../../../entity/User";
 import { Server } from "http";
-import {
-  bootstrapConnections,
-  normalizePort
-} from "../../../utils/bootstrapConnections";
+import { bootstrapConnections, normalizePort } from "../../../utils";
 import { ErrorMessages } from "../errorMessages";
 
 let app: Server;

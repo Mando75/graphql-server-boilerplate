@@ -1,9 +1,6 @@
 import { request } from "graphql-request";
 import "reflect-metadata";
-import {
-  bootstrapConnections,
-  normalizePort
-} from "../../../utils/bootstrapConnections";
+import { bootstrapConnections, normalizePort } from "../../../utils";
 import { Server } from "http";
 import { Connection } from "typeorm";
 import { ErrorMessages } from "../errorMessages";

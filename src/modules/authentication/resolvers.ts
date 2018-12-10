@@ -8,9 +8,9 @@ import {
   verifyLogin
 } from "./lib";
 import { yupUserLoginSchema, yupUserRegistrationSchema } from "./yup.schema";
-import { formatYupError } from "../../utils/formatYupError";
+import { formatYupError } from "../../utils";
 import { ErrorMessages } from "./errorMessages";
-import { sendConfirmEmail } from "../../utils/sendEmail";
+import { sendConfirmEmail } from "../../utils";
 import { User } from "../../entity/User";
 
 export const resolvers: ResolverMap = {
