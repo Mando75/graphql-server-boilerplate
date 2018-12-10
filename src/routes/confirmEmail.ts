@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { redis } from "../utils";
+import { redis } from "../utils/bootstrapConnections";
 import { User } from "../entity/User";
 
 const router: Router = Router();
