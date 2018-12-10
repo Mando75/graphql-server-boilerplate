@@ -16,5 +16,6 @@ export const typeDefs = gql`
   extend type Mutation {
     registerUser(user: UserRegistrationType): [GraphQLError!]
     login(user: UserLoginType): [GraphQLError!]
+    logout: Boolean
   }
 `;

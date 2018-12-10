@@ -1,6 +1,6 @@
 import { hash } from "bcrypt";
 import { AccountType } from "../../enums/accountType.enum";
-import { ResolverMap } from "../../types/graphql-utils";
+import { ResolverMap, Session } from "../../types/graphql-utils";
 import {
   createConfirmEmailLink,
   registerUser,
@@ -83,6 +83,14 @@ export const resolvers: ResolverMap = {
       session.userId = loginAttempt!.id;
 
       return null;
+    },
+    logout(_: any, __: any, { session }: { session: Session }) {
+      return new Promise(resolve => {
+        session.destroy(err => {
+          if (err) resolve(false);
+          else resolve(true);
+        });
+      });
     }
   }
 };
