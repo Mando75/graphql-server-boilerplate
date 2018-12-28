@@ -90,9 +90,9 @@ export const resolvers: ResolverMap = {
       return null;
     },
     logout(_: any, __: any, { session }: { session: Session }) {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         session.destroy(err => {
-          if (err) resolve(false);
+          if (err) reject(false);
           else resolve(true);
         });
       });

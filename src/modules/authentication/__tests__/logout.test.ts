@@ -84,9 +84,18 @@ describe("logout", () => {
       }
     });
 
-    await axios.post(host, {
-      query: logoutMutation
-    });
+    const logoutResp = await axios.post(
+      host,
+      {
+        query: logoutMutation
+      },
+      {
+        headers: {
+          Cookie: loginCookie
+        }
+      }
+    );
+    expect(logoutResp.data.data.logout).toBeTruthy();
 
     const response2 = await axios.post(host, {
       query: meQuery
