@@ -5,10 +5,7 @@ import { User } from "../../../entity/User";
 import { Server } from "http";
 import * as Redis from "ioredis";
 import fetch from "node-fetch";
-import {
-  bootstrapConnections,
-  normalizePort
-} from "../../../utils/bootstrapConnections";
+import { bootstrapConnections, normalizePort } from "../../../utils";
 
 let app: Server;
 let db: Connection;
