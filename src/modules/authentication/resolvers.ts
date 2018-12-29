@@ -12,6 +12,7 @@ import { formatYupError } from "../../utils";
 import { ErrorMessages } from "./errorMessages";
 import { sendConfirmEmail } from "../../utils";
 import { User } from "../../entity/User";
+import { RedisPrefix } from "../../enums/redisPrefix.enum";
 
 export const resolvers: ResolverMap = {
   Query: {
@@ -73,7 +74,11 @@ export const resolvers: ResolverMap = {
         ];
       }
     },
-    async login(_: any, { user }: { user: GQL.IUserLoginType }, { session }) {
+    async login(
+      _: any,
+      { user }: { user: GQL.IUserLoginType },
+      { session, redis, req }
+    ) {
       try {
         await yupUserLoginSchema.validate(user, { abortEarly: false });
       } catch (err) {
@@ -86,15 +91,38 @@ export const resolvers: ResolverMap = {
       }
 
       session.userId = loginAttempt!.id;
+      if (req.sessionID) {
+        await redis.lpush(
+          `${RedisPrefix.USER_SESSION}${loginAttempt!.id}`,
+          req.sessionID
+        );
+      }
 
       return null;
     },
-    logout(_: any, __: any, { session }: { session: Session }) {
-      return new Promise((resolve, reject) => {
-        session.destroy(err => {
-          if (err) reject(false);
-          else resolve(true);
-        });
+    logout(_: any, __: any, { session, redis }) {
+      return new Promise(async (resolve, reject) => {
+        const { userId } = session;
+        if (userId) {
+          const sessionIds = await redis.lrange(
+            `${RedisPrefix.USER_SESSION}${userId}`,
+            0,
+            -1
+          );
+
+          const promises = sessionIds.map((id: string) =>
+            redis.del(`${RedisPrefix.REDIS_SESSION}${id}`)
+          );
+          promises.push(redis.del(`${RedisPrefix.USER_SESSION}${userId}`));
+          try {
+            await Promise.all(promises);
+            resolve(true);
+          } catch (e) {
+            reject(false);
+          }
+        } else {
+          reject(false);
+        }
       });
     }
   }

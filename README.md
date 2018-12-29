@@ -25,7 +25,6 @@ GraphQL is self documenting, so for a full reference of the provided API, clone 
     * CODACY_PROJECT_TOKEN (if you want to report testing coverage on a forked repo)
     * SESSION_SECRET (Used to secure session cookies)
     * HOST (your local testing host, i.e. `http://localhost:4000`)
-    
 5. Run `yarn build && yarn start` (see `package.json` for additional scripts)
  
  # Contributing

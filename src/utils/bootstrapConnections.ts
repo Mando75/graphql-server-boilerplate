@@ -80,7 +80,8 @@ export const normalizePort = (val: any) => {
 const setContext = ({ req }: any) => ({
   redis,
   url: `${req.protocol}://${req.get("host")}`,
-  session: req.session
+  session: req.session,
+  req: req
 });
 /**
  * Request response formatting
@@ -107,7 +108,8 @@ const createSession = () => {
   const RedisStore = connectRedis(session);
   return {
     store: new RedisStore({
-      client: redis as any
+      client: redis as any,
+      prefix: process.env.REDIS_SESSION_PREFIX
     }),
     name: "bid",
     secret: process.env.SESSION_SECRET as string,
