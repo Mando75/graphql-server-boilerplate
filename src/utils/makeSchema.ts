@@ -10,12 +10,17 @@ export const makeSchema = () => {
   const root = getRootSchema();
   const resolversCollection = [root.resolvers];
   const typeDefsCollection = [root.typeDefs];
+  const coreFolders: string[] = fs.readdirSync(__dirname + `/../core`);
   const folders: string[] = fs.readdirSync(__dirname + `/../modules`);
-  folders.forEach((folder: string) => {
-    const { resolvers, typeDefs } = require(filePath(folder, "index"));
+  // Curried callback function to import the resolvers and typedefs from
+  // the correct module folder
+  const importFolderCB = (core: boolean) => (folder: string) => {
+    const { resolvers, typeDefs } = require(filePath(folder, "index", core));
     resolversCollection.push(resolvers);
     typeDefsCollection.push(typeDefs);
-  });
+  };
+  coreFolders.forEach(importFolderCB(true));
+  folders.forEach(importFolderCB(false));
 
   return makeExecutableSchema({
     resolvers: resolversCollection,
@@ -36,6 +41,7 @@ const getRootSchema = () => {
  * Determine the file path of the file to import
  * @param folder
  * @param name
+ * @param core
  */
-export const filePath = (folder: string, name: string) =>
-  __dirname + `/../modules/${folder}/${name}`;
+export const filePath = (folder: string, name: string, core: boolean) =>
+  __dirname + `/../${core ? "core" : "modules"}/${folder}/${name}`;

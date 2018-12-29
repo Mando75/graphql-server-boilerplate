@@ -3,7 +3,9 @@ import { ResolverMap } from "../../types/graphql-utils";
 import { Session } from "../../types/context";
 import {
   createConfirmEmailLink,
+  deleteSessions,
   registerUser,
+  setSession,
   userExists,
   verifyLogin
 } from "./lib";
@@ -89,41 +91,21 @@ export const resolvers: ResolverMap = {
       if (errors.length) {
         return errors;
       }
-
-      session.userId = loginAttempt!.id;
-      if (req.sessionID) {
-        await redis.lpush(
-          `${RedisPrefix.USER_SESSION}${loginAttempt!.id}`,
-          req.sessionID
-        );
-      }
-
+      await setSession(loginAttempt as User, session, req, redis);
       return null;
     },
-    logout(_: any, __: any, { session, redis }) {
-      return new Promise(async (resolve, reject) => {
-        const { userId } = session;
-        if (userId) {
-          const sessionIds = await redis.lrange(
-            `${RedisPrefix.USER_SESSION}${userId}`,
-            0,
-            -1
-          );
-
-          const promises = sessionIds.map((id: string) =>
-            redis.del(`${RedisPrefix.REDIS_SESSION}${id}`)
-          );
-          promises.push(redis.del(`${RedisPrefix.USER_SESSION}${userId}`));
-          try {
-            await Promise.all(promises);
-            resolve(true);
-          } catch (e) {
-            reject(false);
-          }
-        } else {
-          reject(false);
-        }
-      });
+    async logout(_: any, __: any, { session, redis }) {
+      const { userId } = session;
+      if (userId) {
+        const sessionIds = await redis.lrange(
+          `${RedisPrefix.USER_SESSION}${userId}`,
+          0,
+          -1
+        );
+        return await deleteSessions(sessionIds, userId, redis);
+      } else {
+        return false;
+      }
     }
   }
 };

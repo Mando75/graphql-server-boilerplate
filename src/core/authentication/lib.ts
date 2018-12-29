@@ -4,6 +4,7 @@ import { Redis } from "ioredis";
 import { v4 } from "uuid";
 import { ErrorMessages } from "./errorMessages";
 import { compare } from "bcrypt";
+import { RedisPrefix } from "../../enums/redisPrefix.enum";
 
 /**
  * Checks if user already exists based upon email address
@@ -77,4 +78,53 @@ export const verifyLogin = async (user: User, password: string) => {
     });
   }
   return errors;
+};
+
+/**
+ * Handles logic for creating user sessions. Creates a new session with express-session,
+ * and saves the session id to the user's master session list in Redis
+ * @param loginAttempt
+ * @param session
+ * @param req
+ * @param redis
+ */
+export const setSession = async (
+  loginAttempt: User,
+  session: Express.Session,
+  req: Express.Request,
+  redis: Redis
+) => {
+  session.userId = loginAttempt!.id;
+  if (req.sessionID) {
+    await redis.lpush(
+      `${RedisPrefix.USER_SESSION}${loginAttempt!.id}`,
+      req.sessionID
+    );
+  }
+};
+
+/**
+ * Handles deleting user sessions. When a session is deleted, it will gather
+ * all of the sessions the user had stored in Redis, and deletes them.
+ * @param sessionIds
+ * @param userId
+ * @param redis
+ */
+export const deleteSessions = async (
+  sessionIds: string[],
+  userId: string,
+  redis: Redis
+) => {
+  return new Promise(async (resolve, reject) => {
+    const promises = sessionIds.map((id: string) =>
+      redis.del(`${RedisPrefix.REDIS_SESSION}${id}`)
+    );
+    promises.push(redis.del(`${RedisPrefix.USER_SESSION}${userId}`));
+    try {
+      await Promise.all(promises);
+      resolve(true);
+    } catch (e) {
+      reject(false);
+    }
+  });
 };
