@@ -18,25 +18,36 @@ export class TestClient {
     };
   }
 
-  async register(email: string, password: string, confirmEmail: boolean) {
+  async register(
+    user: {
+      email: string;
+      password: string;
+      firstName: string;
+      lastName: string;
+    },
+    confirmEmail: boolean
+  ) {
     const resp = rp.post(this.url, {
       ...this.options,
       body: {
-        query: `
-          mutation {
-            register(email: "${email}", password: "${password}") {
-              path
-              message
-            }
-          }
-        `
+        query: `mutation {
+                  registerUser(user: {
+                    firstName: "${user.firstName}",
+                    lastName: "${user.lastName}",
+                    password: "${user.password}",
+                    email: "${user.email}"
+                  }) {
+                    message
+                    path
+                  }
+                }`
       }
     });
     if (confirmEmail) {
-      const user = await User.findOne({ email });
-      if (user) {
-        user.emailConfirmed = true;
-        await user.save();
+      const ruser = await User.findOne({ email: user.email });
+      if (ruser) {
+        ruser.emailConfirmed = true;
+        await ruser.save();
       }
     }
     return resp;
@@ -77,7 +88,7 @@ export class TestClient {
       body: {
         query: `
         mutation {
-          login(email: "${email}", password: "${password}") {
+          login(user: { email: "${email}", password: "${password}" }) {
             path
             message
           }

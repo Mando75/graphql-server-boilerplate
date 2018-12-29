@@ -1,15 +1,10 @@
 import "reflect-metadata";
-import {
-  bootstrapConnections,
-  normalizePort
-} from "../../../utils/bootstrapConnections";
+import { bootstrapConnections, normalizePort } from "../../../utils";
 import { Server } from "http";
 import { Connection } from "typeorm";
-import axios from "axios";
-axios.defaults.withCredentials = true;
-
 import { User } from "../../../entity/User";
 import { AccountType } from "../../../enums/accountType.enum";
+import { TestClient } from "../../../utils";
 
 const host = process.env.TEST_GRAPHQL_ENDPOINT as string;
 let app: Server;
@@ -33,75 +28,27 @@ beforeAll(async () => {
   userId = user.id;
 });
 
-const loginMutation = (e: string, p: string) => `
-mutation {
-  login(user: { email: "${e}", password: "${p}" }) {
-    path
-    message
-  }
-}
-`;
-
-const meQuery = `
-{
-  me {
-    id
-    email
-  }
-}
-`;
-
-const logoutMutation = `
-mutation {
-  logout
-}
-`;
 const email = "dylantestingtonlogout@test.com";
 const password = "logouttestpassword";
 
 describe("logout", () => {
-  test("test logging out a user", async () => {
-    const loginCookie = (await axios.post(host, {
-      query: loginMutation(email, password)
-    })).headers["set-cookie"];
+  const tc = new TestClient(host);
+  it("logs out the user", async () => {
+    await tc.login(email, password);
+    const response = await tc.me();
 
-    const response = await axios.post(
-      host,
-      {
-        query: meQuery
-      },
-      {
-        headers: {
-          Cookie: loginCookie
-        }
-      }
-    );
-
-    expect(response.data.data).toEqual({
+    expect(response.data).toEqual({
       me: {
         id: userId,
         email
       }
     });
 
-    const logoutResp = await axios.post(
-      host,
-      {
-        query: logoutMutation
-      },
-      {
-        headers: {
-          Cookie: loginCookie
-        }
-      }
-    );
-    expect(logoutResp.data.data.logout).toBeTruthy();
+    await tc.logout();
 
-    const response2 = await axios.post(host, {
-      query: meQuery
-    });
+    const response2 = await tc.me();
 
-    expect(response2.data.data.me).toBeNull();
+    expect(response2.data.me).toBeNull();
   });
 });
 

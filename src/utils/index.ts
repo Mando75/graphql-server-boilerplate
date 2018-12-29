@@ -8,6 +8,7 @@ import { CreateTypeORMConnection } from "./CreateTypeORMConnection";
 import { formatYupError } from "./formatYupError";
 import { filePath, makeSchema } from "./makeSchema";
 import { sendConfirmEmail } from "./sendEmail";
+import { TestClient } from "./testClient";
 
 export {
   bootstrapConnections,
@@ -18,5 +19,6 @@ export {
   makeSchema,
   normalizePort,
   redis,
-  sendConfirmEmail
+  sendConfirmEmail,
+  TestClient
 };

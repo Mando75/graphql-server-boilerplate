@@ -1,34 +1,30 @@
-import { request } from "graphql-request";
 import "reflect-metadata";
-import { bootstrapConnections, normalizePort } from "../../../utils";
+import {
+  bootstrapConnections,
+  normalizePort,
+  TestClient
+} from "../../../utils";
 import { Server } from "http";
 import { Connection } from "typeorm";
 import { ErrorMessages } from "../errorMessages";
 
 const host = process.env.TEST_GRAPHQL_ENDPOINT as string;
-const mutation = (user: string) => `
-  mutation {
-    registerUser(user: ${user}) {
-      path
-      message
-    }
-  }
-`;
 
 const user = ({
   email = "chucknorris@chuck.com",
   pwd = "Password1!",
   first = "Chuck",
   last = "Chuck"
-}: any) => `{
-  email: "${email}",
-  password: "${pwd}",
-  firstName: "${first}",
-  lastName: "${last}"
-}`;
+}: any) => ({
+  email,
+  password: pwd,
+  firstName: first,
+  lastName: last
+});
 
 let app: Server;
 let db: Connection;
+const tc = new TestClient(host);
 
 beforeAll(async () => {
   const resp = await bootstrapConnections(normalizePort(process.env.TEST_PORT));
@@ -40,32 +36,32 @@ beforeAll(async () => {
 
 describe("Registering a new user", async () => {
   it("Registers a user properly", async () => {
-    const resp: any = await request(host, mutation(user({})));
-    expect(resp.registerUser).toBe(null);
+    const resp = await tc.register(user({}), false);
+    expect(resp.data.registerUser).toBe(null);
   });
 
   it("Can't register the same user twice", async () => {
-    const { registerUser }: any = await request(host, mutation(user({})));
+    const {
+      data: { registerUser }
+    } = await tc.register(user({}), false);
     expect(registerUser).toHaveLength(1);
     expect(registerUser[0].path).toEqual("email");
     expect(registerUser[0].message).toEqual(ErrorMessages.EMAIL_DUPLICATE);
   });
 
   it("catches an invalid email", async () => {
-    const { registerUser }: any = await request(
-      host,
-      mutation(user({ email: "bademail" }))
-    );
+    const {
+      data: { registerUser }
+    } = await tc.register(user({ email: "bademail" }), false);
     expect(registerUser).toHaveLength(1);
     expect(registerUser[0].path).toEqual("email");
     expect(registerUser[0].message).toEqual(ErrorMessages.EMAIL_INVALID_EMAIL);
   });
 
   it("catches short email", async () => {
-    const { registerUser }: any = await request(
-      host,
-      mutation(user({ email: "1@a.c" }))
-    );
+    const {
+      data: { registerUser }
+    } = await tc.register(user({ email: "1@a.c" }), false);
     expect(registerUser).toHaveLength(1);
     expect(registerUser[0].path).toEqual("email");
     expect(registerUser[0].message).toEqual(ErrorMessages.EMAIL_TOO_SHORT);
@@ -73,23 +69,26 @@ describe("Registering a new user", async () => {
 
   it("catches long email", async () => {
     const invalidEmail = `${new Array(255).join("a")}@chuck.com`;
-    const { registerUser }: any = await request(
-      host,
-      mutation(user({ email: invalidEmail }))
-    );
+    const {
+      data: { registerUser }
+    } = await tc.register(user({ email: invalidEmail }), false);
     expect(registerUser).toHaveLength(1);
     expect(registerUser[0].path).toEqual("email");
     expect(registerUser[0].message).toEqual(ErrorMessages.EMAIL_TOO_LONG);
   });
 
   it("catches invalid password", async () => {
-    const { registerUser }: any = await request(
-      host,
-      mutation(user({ pwd: "badpassword", email: "new@mail.com" }))
+    const {
+      data: { registerUser }
+    } = await tc.register(
+      user({ email: "newmail@mail.com", pwd: "badpwd" }),
+      false
     );
-    expect(registerUser).toHaveLength(1);
+    expect(registerUser).toHaveLength(2);
     expect(registerUser[0].path).toEqual("password");
-    expect(registerUser[0].message).toEqual(ErrorMessages.PASSWORD_TOO_SIMPLE);
+    expect(registerUser[0].message).toEqual(ErrorMessages.PASSWORD_TOO_SHORT);
+    expect(registerUser[1].path).toEqual("password");
+    expect(registerUser[1].message).toEqual(ErrorMessages.PASSWORD_TOO_SIMPLE);
   });
 });
 

@@ -1,52 +1,37 @@
-import { registerUser } from "../lib";
-import { request } from "graphql-request";
 import { Connection } from "typeorm";
 import * as Redis from "ioredis";
-import { AccountType } from "../../../enums/accountType.enum";
 import { User } from "../../../entity/User";
 import { Server } from "http";
 import { bootstrapConnections, normalizePort } from "../../../utils";
 import { ErrorMessages } from "../errorMessages";
+import { TestClient } from "../../../utils";
 
 let app: Server;
 let db: Connection;
 const host = process.env.TEST_GRAPHQL_ENDPOINT as string;
 const redis = new Redis();
-
+const password = "Password1!";
+const email = "dylantestingtonlogin@myemail.com";
+const tc = new TestClient(host);
 beforeAll(async () => {
   const resp = await bootstrapConnections(normalizePort(process.env.TEST_PORT));
   if (resp) {
     app = resp.app;
     db = resp.db;
   }
+  const user = {
+    email,
+    firstName: "Dylan",
+    lastName: "Testington",
+    password
+  };
+  await tc.register(user, false);
 });
 
 describe("Logging in a user", () => {
-  const password = "logintestpassword";
-  const email = "dylantestingtonlogin@myemail.com";
-  const loginMutation = (email: string, password: string) => `
-    mutation {
-      login(user: { email: "${email}", password: "${password}" }) {
-        message
-        path
-      }
-    }`;
-  beforeAll(async () => {
-    const user = {
-      email,
-      firstName: "Dylan",
-      lastName: "Testington",
-      password
-    };
-    await registerUser({
-      user,
-      accountType: AccountType.USER
-    });
-  });
-
   it("catches no email confirmation", async () => {
-    const response = await request(host, loginMutation(email, password));
-    expect(response).toEqual({
+    const response = await tc.login(email, password);
+    expect(response.data).toEqual({
       login: [
         {
           path: "email",
@@ -62,13 +47,13 @@ describe("Logging in a user", () => {
       user.emailConfirmed = true;
       await user.save();
     }
-    const response = await request(host, loginMutation(email, password));
-    expect(response).toEqual({ login: null });
+    const response = await tc.login(email, password);
+    expect(response.data).toEqual({ login: null });
   });
 
   it("catches bad password", async () => {
-    const response = await request(host, loginMutation(email, "bad password"));
-    expect(response).toEqual({
+    const response = await tc.login(email, "badpassword");
+    expect(response.data).toEqual({
       login: [
         {
           path: "email",
@@ -79,11 +64,8 @@ describe("Logging in a user", () => {
   });
 
   it("catches bad email", async () => {
-    const response = await request(
-      host,
-      loginMutation("bad@email.com", password)
-    );
-    expect(response).toEqual({
+    const response = await tc.login("bademail@email.com", password);
+    expect(response.data).toEqual({
       login: [
         {
           path: "email",

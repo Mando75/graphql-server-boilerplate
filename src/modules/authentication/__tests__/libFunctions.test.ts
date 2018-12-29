@@ -4,7 +4,7 @@ import { AccountType } from "../../../enums/accountType.enum";
 import { User } from "../../../entity/User";
 import { Server } from "http";
 import * as Redis from "ioredis";
-import fetch from "node-fetch";
+import * as rp from "request-promise";
 import { bootstrapConnections, normalizePort } from "../../../utils";
 
 let app: Server;
@@ -77,8 +77,7 @@ describe("createEmailConfirmationLink", () => {
       redis
     );
 
-    const response = await fetch(url);
-    const { msg } = await response.json();
+    const { msg } = await rp({ uri: url, json: true });
     expect(msg).toEqual("ok");
     const user = await User.findOne({ where: { id: userId } });
     expect((user as User).emailConfirmed).toBeTruthy();
@@ -88,10 +87,15 @@ describe("createEmailConfirmationLink", () => {
     expect(value).toBeNull();
   });
 
-  test("sends invalid back if bad id sent", async () => {
-    const response = await fetch(`http://localhost:4001/confirm/12083`);
-    const { msg } = await response.json();
-    expect(msg).toEqual("invalid");
+  it("sends invalid back if bad id sent", async () => {
+    try {
+      await rp({
+        uri: `http://localhost:4001/confirm/12083`,
+        json: true
+      });
+    } catch (e) {
+      expect(e.statusCode).toEqual(403);
+    }
   });
 });
 
