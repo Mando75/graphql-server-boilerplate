@@ -1,8 +1,4 @@
-import {
-  bootstrapConnections,
-  normalizePort,
-  redis
-} from "./bootstrapConnections";
+import { bootstrapConnections, normalizePort } from "./bootstrapConnections";
 import { createShield } from "./createShield";
 import { CreateTypeORMConnection } from "./CreateTypeORMConnection";
 import { formatYupError } from "./formatYupError";
@@ -18,7 +14,6 @@ export {
   formatYupError,
   makeSchema,
   normalizePort,
-  redis,
   sendConfirmEmail,
   TestClient
 };
