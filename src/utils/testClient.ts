@@ -97,4 +97,8 @@ export class TestClient {
       }
     });
   }
+
+  async query(query: string) {
+    return rp.post(this.url, { ...this.options, body: { query } });
+  }
 }
