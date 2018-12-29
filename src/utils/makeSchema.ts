@@ -11,7 +11,7 @@ export const makeSchema = () => {
   const resolversCollection = [root.resolvers];
   const typeDefsCollection = [root.typeDefs];
   const coreFolders: string[] = fs.readdirSync(__dirname + `/../core`);
-  const folders: string[] = fs.readdirSync(__dirname + `/../modules`);
+  const moduleFolders: string[] = fs.readdirSync(__dirname + `/../modules`);
   // Curried callback function to import the resolvers and typedefs from
   // the correct module folder
   const importFolderCB = (core: boolean) => (folder: string) => {
@@ -20,7 +20,7 @@ export const makeSchema = () => {
     typeDefsCollection.push(typeDefs);
   };
   coreFolders.forEach(importFolderCB(true));
-  folders.forEach(importFolderCB(false));
+  if (moduleFolders.length) moduleFolders.forEach(importFolderCB(false));
 
   return makeExecutableSchema({
     resolvers: resolversCollection,

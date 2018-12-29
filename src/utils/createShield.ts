@@ -25,10 +25,13 @@ const rootPermission = {
 
 const loadPermissions = () => {
   const permissionsCollection = [rootPermission];
+  const coreFolders: string[] = fs.readdirSync(__dirname + `/../core`);
   const folders: string[] = fs.readdirSync(__dirname + `/../modules`);
-  folders.forEach((folder: string) => {
-    const { permissions } = require(filePath(folder, "index"));
+  const loadPermissionCB = (core: boolean) => (folder: string) => {
+    const { permissions } = require(filePath(folder, "index", core));
     permissionsCollection.push(permissions);
-  });
+  };
+  coreFolders.forEach(loadPermissionCB(true));
+  folders.forEach(loadPermissionCB(false));
   return permissionsCollection;
 };

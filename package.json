@@ -2,7 +2,7 @@
   "name": "graphql-server-boilerplate",
   "version": "1.0.0",
   "scripts": {
-    "build": "yarn run tsc -p ./",
+    "build": "rm -rf dist && yarn run tsc -p ./",
     "start": "node dist/index.js",
     "run": "NODE_ENV=development nodemon --watch ./dist ./dist/index.js",
     "test": "NODE_ENV=test jest --coverage --runInBand --forceExit",

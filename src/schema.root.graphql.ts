@@ -1,13 +1,13 @@
 import { gql } from "apollo-server-express";
 
 export const typeDefs = gql`
-  type Query {
-    books(title: String, author: String): [Book]
+  type Me {
+    id: ID!
+    email: String!
   }
 
-  type Book {
-    title: String
-    author: String
+  type Query {
+    me: Me
   }
 
   type GraphQLError {
