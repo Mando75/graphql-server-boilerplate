@@ -1,4 +1,8 @@
-import { createConfirmEmailLink, registerUser, userExists } from "../lib";
+import {
+  createConfirmEmailLink,
+  registerUser,
+  userExists
+} from "../connectors/lib";
 import { Connection } from "typeorm";
 import { AccountType } from "../../../enums/accountType.enum";
 import { User } from "../../../entity/User";

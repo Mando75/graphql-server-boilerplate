@@ -17,5 +17,7 @@ export const typeDefs = gql`
     registerUser(user: UserRegistrationType): [GraphQLError!]
     login(user: UserLoginType): [GraphQLError!]
     logout: Boolean
+    sendForgotPasswordEmail(email: String!): Boolean
+    forgotPasswordChange(newPassword: String!, key: String!): [GraphQLError!]
   }
 `;

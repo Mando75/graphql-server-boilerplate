@@ -15,7 +15,10 @@ export enum ErrorMessages {
   PASSWORD_TOO_SHORT = "Password must be at least 8 characters",
   PASSWORD_TOO_LONG = "Password must be less than 255 characters",
   PASSWORD_TOO_SIMPLE = "Password must contain at least one of the following uppercase letter, lowercase letter, numeric character, special character",
+  // Reset key expired
+  EXPIRED_KEY = "Link has expired",
 
   // LOGIN errors
-  INVALID_LOGIN = "Invalid Login"
+  INVALID_LOGIN = "Invalid Login",
+  ACCOUNT_LOCKED = "Account Locked"
 }

@@ -37,6 +37,8 @@ declare namespace GQL {
     registerUser: Array<IGraphQLError> | null;
     login: Array<IGraphQLError> | null;
     logout: boolean | null;
+    sendForgotPasswordEmail: boolean | null;
+    forgotPasswordChange: Array<IGraphQLError> | null;
   }
 
   interface IRegisterUserOnMutationArguments {
@@ -45,6 +47,15 @@ declare namespace GQL {
 
   interface ILoginOnMutationArguments {
     user?: IUserLoginType | null;
+  }
+
+  interface ISendForgotPasswordEmailOnMutationArguments {
+    email: string;
+  }
+
+  interface IForgotPasswordChangeOnMutationArguments {
+    newPassword: string;
+    key: string;
   }
 
   interface IUserRegistrationType {

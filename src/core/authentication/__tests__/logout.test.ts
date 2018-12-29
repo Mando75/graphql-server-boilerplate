@@ -1,10 +1,13 @@
 import "reflect-metadata";
-import { bootstrapConnections, normalizePort } from "../../../utils";
+import {
+  bootstrapConnections,
+  normalizePort,
+  TestClient
+} from "../../../utils";
 import { Server } from "http";
 import { Connection } from "typeorm";
 import { User } from "../../../entity/User";
 import { AccountType } from "../../../enums/accountType.enum";
-import { TestClient } from "../../../utils";
 
 const host = process.env.TEST_GRAPHQL_ENDPOINT as string;
 let app: Server;

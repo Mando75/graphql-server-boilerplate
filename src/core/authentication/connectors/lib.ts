@@ -1,10 +1,8 @@
-import { User } from "../../entity/User";
-import { AccountType } from "../../enums/accountType.enum";
+import { User } from "../../../entity/User";
+import { AccountType } from "../../../enums/accountType.enum";
 import { Redis } from "ioredis";
 import { v4 } from "uuid";
-import { ErrorMessages } from "./errorMessages";
-import { compare } from "bcrypt";
-import { RedisPrefix } from "../../enums/redisPrefix.enum";
+import { RedisPrefix } from "../../../enums/redisPrefix.enum";
 
 /**
  * Checks if user already exists based upon email address
@@ -52,32 +50,24 @@ export const createConfirmEmailLink = async (
   redis: Redis
 ) => {
   const id = v4();
-  await redis.set(id, userId, "ex", 60 * 60 * 24);
+  await redis.set(RedisPrefix.CONFIRM_EMAIL + id, userId, "ex", 60 * 60 * 24);
   return `${url}/confirm/${id}`;
 };
 
 /**
- * Verify that a user's login information is correct
- * @param user
- * @param password
+ * Creates a password reset link which can be given to the user
+ * @param url
+ * @param userId
+ * @param redis
  */
-export const verifyLogin = async (user: User, password: string) => {
-  const errorResponse = {
-    path: "email",
-    message: ErrorMessages.INVALID_LOGIN
-  };
-  // Verify user exists and password matches
-  const errors =
-    user && (await compare(password, user.password)) ? [] : [errorResponse];
-
-  // Verify that user email is confirmed
-  if (user && !errors.length && !user.emailConfirmed) {
-    errors.push({
-      path: "email",
-      message: ErrorMessages.EMAIL_NOT_CONFIRMED
-    });
-  }
-  return errors;
+export const createForgotPasswordLink = async (
+  url: string,
+  userId: string,
+  redis: Redis
+) => {
+  const id = v4();
+  await redis.set(RedisPrefix.FORGOT_PASSWORD + id, userId, "ex", 60 * 20);
+  return `${url}/change-password/${id}`;
 };
 
 /**
@@ -127,4 +117,8 @@ export const deleteSessions = async (
       reject(false);
     }
   });
+};
+
+export const getSessionIds = async (redis: Redis, userId: string) => {
+  return await redis.lrange(`${RedisPrefix.USER_SESSION}${userId}`, 0, -1);
 };

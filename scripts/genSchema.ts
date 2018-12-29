@@ -6,6 +6,5 @@ import { makeSchema } from "../src/utils/makeSchema";
 
 const types = generateNamespace("GQL", makeSchema());
 
-fs.writeFile(path.join(__dirname, "../src/types/graphql.d.ts"), types, err => {
-  console.log(err);
-});
+fs.writeFileSync(path.join(__dirname, "../src/types/graphql.d.ts"), types);
+process.exit(0);

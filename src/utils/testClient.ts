@@ -1,5 +1,6 @@
 import * as rp from "request-promise";
 import { User } from "../entity/User";
+import { AccountType } from "../enums/accountType.enum";
 
 export class TestClient {
   url: string;
@@ -100,5 +101,20 @@ export class TestClient {
 
   async query(query: string) {
     return rp.post(this.url, { ...this.options, body: { query } });
+  }
+
+  static async createUser(
+    email: string,
+    password: string,
+    emailConfirmed: boolean
+  ) {
+    return await User.create({
+      firstName: "Dylan",
+      lastName: "Testington",
+      accountType: AccountType.USER,
+      email,
+      password,
+      emailConfirmed
+    }).save();
   }
 }

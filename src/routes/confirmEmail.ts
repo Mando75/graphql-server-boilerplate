@@ -1,6 +1,7 @@
 import { Request, Response, Router } from "express";
 import { redis } from "../utils/bootstrapConnections";
 import { User } from "../entity/User";
+import { RedisPrefix } from "../enums/redisPrefix.enum";
 
 const router: Router = Router();
 
@@ -9,7 +10,7 @@ const router: Router = Router();
  */
 router.get("/confirm/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
-  const userId = await redis.get(id);
+  const userId = await redis.get(RedisPrefix.CONFIRM_EMAIL + id);
   if (userId) {
     await setEmailConfirmed(id, userId);
     res.json({
