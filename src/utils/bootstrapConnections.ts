@@ -14,7 +14,15 @@ import * as Redis from "ioredis";
 import { applyMiddleware } from "graphql-middleware";
 import { createShield } from "./createShield";
 
-export const redis = new Redis();
+export const redis = new Redis({
+  retryStrategy(): number | false {
+    return false;
+  }
+});
+redis.on("error", () => {
+  console.log("Error connecting");
+  redis.disconnect();
+});
 /**
  * Try to bootstrap a database and server connection. If successful,
  * returns the db and server connection instances in an object
