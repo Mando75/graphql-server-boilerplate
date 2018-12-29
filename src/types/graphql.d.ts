@@ -22,19 +22,7 @@ declare namespace GQL {
 
   interface IQuery {
     __typename: "Query";
-    books: Array<IBook | null> | null;
     me: IMe | null;
-  }
-
-  interface IBooksOnQueryArguments {
-    title?: string | null;
-    author?: string | null;
-  }
-
-  interface IBook {
-    __typename: "Book";
-    title: string | null;
-    author: string | null;
   }
 
   interface IMe {
