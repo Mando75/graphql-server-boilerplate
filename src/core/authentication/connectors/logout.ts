@@ -14,7 +14,5 @@ export const logout = async (_: any, __: any, { session, redis }: Context) => {
   if (userId) {
     const sessionIds = await getSessionIds(redis, userId);
     return await deleteSessions(sessionIds, userId, redis);
-  } else {
-    return false;
   }
 };

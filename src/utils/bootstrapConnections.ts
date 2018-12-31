@@ -17,14 +17,10 @@ import * as RateLimit from "express-rate-limit";
 import * as RateLimitStore from "rate-limit-redis";
 import passport from "./passport";
 
-export const redis = new Redis({
-  retryStrategy(): number | false {
-    return false;
-  }
-});
+export const redis = new Redis();
 redis.on("error", () => {
   console.log("Error connecting");
-  redis.disconnect();
+  if (process.env.NODE_ENV != "production") redis.disconnect();
 });
 
 /**
@@ -40,7 +36,7 @@ export const bootstrapConnections = async (port: number) => {
       client: redis
     }),
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 // limit each IP to 100 requests per windowMs
+    max: 1000 // limit each IP to 1000 requests per windowMs
   });
   server.enable("trust proxy");
   server.use(limiter);

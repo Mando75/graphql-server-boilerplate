@@ -73,7 +73,7 @@ export const createForgotPasswordLink = async (
 /**
  * Handles logic for creating user sessions. Creates a new session with express-session,
  * and saves the session id to the user's master session list in Redis
- * @paramuserId
+ * @param userId
  * @param session
  * @param req
  * @param redis
