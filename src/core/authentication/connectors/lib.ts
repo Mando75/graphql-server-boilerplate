@@ -73,23 +73,20 @@ export const createForgotPasswordLink = async (
 /**
  * Handles logic for creating user sessions. Creates a new session with express-session,
  * and saves the session id to the user's master session list in Redis
- * @param loginAttempt
+ * @paramuserId
  * @param session
  * @param req
  * @param redis
  */
 export const setSession = async (
-  loginAttempt: User,
+  userId: string,
   session: Express.Session,
   req: Express.Request,
   redis: Redis
 ) => {
-  session.userId = loginAttempt!.id;
+  session.userId = userId;
   if (req.sessionID) {
-    await redis.lpush(
-      `${RedisPrefix.USER_SESSION}${loginAttempt!.id}`,
-      req.sessionID
-    );
+    await redis.lpush(`${RedisPrefix.USER_SESSION}${userId}`, req.sessionID);
   }
 };
 

@@ -27,11 +27,13 @@ export const login = async (
     return formatYupError(err);
   }
   const loginAttempt = await User.findOne({ email: user.email });
-  const errors = await verifyLogin(loginAttempt as User, user.password);
+  // ensures that a user exists, otherwise returns
+  const errors = await verifyLogin(loginAttempt, user.password);
   if (errors.length) {
     return errors;
   }
-  await setSession(loginAttempt as User, session, req, redis);
+  // we already know the user exists, otherwise this would have returned
+  await setSession((loginAttempt as User).id, session, req, redis);
   return null;
 };
 
@@ -40,14 +42,16 @@ export const login = async (
  * @param user
  * @param password
  */
-export const verifyLogin = async (user: User, password: string) => {
+export const verifyLogin = async (user: User | undefined, password: string) => {
   const errorResponse = {
     path: "email",
     message: ErrorMessages.INVALID_LOGIN
   };
   // Verify user exists and password matches
   const errors =
-    user && (await compare(password, user.password)) ? [] : [errorResponse];
+    user && (await compare(password, user.password as string))
+      ? []
+      : [errorResponse];
 
   // Verify that user email is confirmed
   if (user && !errors.length && !user.emailConfirmed) {

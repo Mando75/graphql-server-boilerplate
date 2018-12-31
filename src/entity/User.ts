@@ -21,7 +21,7 @@ export class User extends BaseEntity {
 
   @Index()
   @Column({ type: "varchar", length: 255 })
-  firstName: string | undefined;
+  firstName: string;
 
   @Index()
   @Column({ type: "varchar", length: 255 })
@@ -31,8 +31,8 @@ export class User extends BaseEntity {
   @Column("varchar", { length: 255 })
   email: string;
 
-  @Column("text")
-  password: string;
+  @Column("text", { nullable: true })
+  password: string | null;
 
   @Column("enum", { enum: AccountType })
   accountType: AccountType;
@@ -57,6 +57,6 @@ export class User extends BaseEntity {
 
   @BeforeInsert()
   async hashPassword() {
-    this.password = await hash(this.password, 10);
+    if (this.password) this.password = await hash(this.password, 10);
   }
 }

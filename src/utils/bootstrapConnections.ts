@@ -13,6 +13,9 @@ import { routes } from "../routes";
 import * as Redis from "ioredis";
 import { applyMiddleware } from "graphql-middleware";
 import { createShield } from "./createShield";
+import * as RateLimit from "express-rate-limit";
+import * as RateLimitStore from "rate-limit-redis";
+import passport from "./passport";
 
 export const redis = new Redis({
   retryStrategy(): number | false {
@@ -23,6 +26,7 @@ redis.on("error", () => {
   console.log("Error connecting");
   redis.disconnect();
 });
+
 /**
  * Try to bootstrap a database and server connection. If successful,
  * returns the db and server connection instances in an object
@@ -31,7 +35,17 @@ redis.on("error", () => {
 export const bootstrapConnections = async (port: number) => {
   let db: Connection, app: Server;
   const server = express();
+  const limiter = new RateLimit({
+    store: new RateLimitStore({
+      client: redis
+    }),
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100 // limit each IP to 100 requests per windowMs
+  });
+  server.enable("trust proxy");
+  server.use(limiter);
   server.use(session(createSession()));
+  server.use(passport.initialize());
   server.use(routes);
   try {
     // Connect to Database
@@ -96,7 +110,7 @@ const setContext = ({ req }: any) => ({
  * @param response
  */
 const formatResponse = (response: Response) => {
-  console.log(response);
+  // TODO Logging
   return response;
 };
 
