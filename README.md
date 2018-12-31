@@ -17,20 +17,20 @@ GraphQL is self documenting, so for a full reference of the provided API, clone 
 
 ## Install Instructions
 
-1. Make sure you have Postgresql and Redis installed on your local machine.
+ 1. Make sure you have Postgresql and Redis installed on your local machine.
 
-2. Fork or clone the repository
+ 2. Fork or clone the repository
 
-3. Run `yarn install`
+ 3. Run `yarn install`
 
-4. Make sure you have the following keys present in an `.env` file or as environmental variables
+ 4. Make sure you have the following keys present in an `.env` file or as environmental variables
 
-   - SENDGRID_API_KEY (for sending emails)
-   - CODACY_PROJECT_TOKEN (if you want to report testing coverage on a forked repo)
-   - SESSION_SECRET (Used to secure session cookies)
-   - HOST (your local testing host, i.e. `http://localhost:4000`)
+     - SENDGRID_API_KEY (for sending emails)
+     - CODACY_PROJECT_TOKEN (if you want to report testing coverage on a forked repo)
+     - SESSION_SECRET (Used to secure session cookies)
+     - HOST (your local testing host, i.e. `http://localhost:4000`)
 
-5. Run `yarn build && yarn start` (see `package.json` for additional scripts)
+ 5. Run `yarn build && yarn start` (see `package.json` for additional scripts)
 
 ## Modules
 
