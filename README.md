@@ -17,23 +17,23 @@ GraphQL is self documenting, so for a full reference of the provided API, clone 
 
 ## Install Instructions
 
- 1. Make sure you have Postgresql and Redis installed on your local machine.
+1.  Make sure you have Postgresql and Redis installed on your local machine.
 
- 2. Fork or clone the repository
+2.  Fork or clone the repository
 
- 3. Run `yarn install`
+3.  Run `yarn install`
 
- 4. Make sure you have the following keys present in an `.env` file or as environmental variables
+4.  Make sure you have the following keys present in an `.env` file or as environmental variables
 
-     - `SENDGRID_API_KEY` (for sending emails)
-     - `CODACY_PROJECT_TOKEN` (if you want to report testing coverage on a forked repo)
-     - `SESSION_SECRET` (Used to secure session cookies)
-     - `(TEST_)HOST` (your local (testing) host, i.e. `http://localhost:4000`)
-     - `GOOGLE_CLIENT_ID` your Google OAuth Client ID
-     - `GOOGLE_CLIENT_SECRET` your Google OAuth Client Secret
-     - `GOOGLE_AUTH_CALLBACK_URL` your application's OAuth callback url for Google to use
+    - `SENDGRID_API_KEY` (for sending emails)
+    - `CODACY_PROJECT_TOKEN` (if you want to report testing coverage on a forked repo)
+    - `SESSION_SECRET` (Used to secure session cookies)
+    - `(TEST_)HOST` (your local (testing) host, i.e. `http://localhost:4000`)
+    - `GOOGLE_CLIENT_ID` your Google OAuth Client ID
+    - `GOOGLE_CLIENT_SECRET` your Google OAuth Client Secret
+    - `GOOGLE_AUTH_CALLBACK_URL` your application's OAuth callback url for Google to use
 
- 5. Run `yarn build && yarn start` (see `package.json` for additional scripts)
+5.  Run `yarn build && yarn start` (see `package.json` for additional scripts)
 
 ## Modules
 
