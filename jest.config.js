@@ -7,6 +7,7 @@ module.exports = {
   testRegex: "/__tests__/.*.test.(js|ts|tsx)?$",
   moduleFileExtensions: ["ts", "tsx", "js", "json", "node"],
   globalSetup: "./jest/globalSetup.js",
+  globalTeardown: "./jest/globalTeardown.js",
   coverageReporters: ["lcov", "html"],
   testEnvironment: "node",
 };
