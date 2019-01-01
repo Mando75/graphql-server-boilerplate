@@ -19,6 +19,11 @@ export class TestClient {
     };
   }
 
+  static setEnv(port: number) {
+    process.env.TEST_HOST = `http://localhost:${port}`;
+    process.env.TEST_GRAPHQL_ENDPOINT = `http://localhost:${port}/graphql`;
+  }
+
   async register(
     user: {
       email: string;

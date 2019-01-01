@@ -10,6 +10,8 @@ import { Server } from "http";
 import * as Redis from "ioredis";
 import * as rp from "request-promise";
 import { bootstrapConnections, normalizePort } from "../../../utils";
+import { TestClient } from "../../../utils";
+import { AddressInfo } from "ws";
 
 let app: Server;
 let db: Connection;
@@ -20,6 +22,8 @@ beforeAll(async () => {
   const resp = await bootstrapConnections(normalizePort(process.env.TEST_PORT));
   if (resp) {
     app = resp.app;
+    const { port } = app.address() as AddressInfo;
+    TestClient.setEnv(port);
     db = resp.db;
   }
 });

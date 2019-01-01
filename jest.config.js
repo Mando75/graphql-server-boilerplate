@@ -9,5 +9,4 @@ module.exports = {
   globalSetup: "./jest/globalSetup.js",
   coverageReporters: ["lcov", "html"],
   testEnvironment: "node",
-  testURL: "http://localhost:4001"
 };

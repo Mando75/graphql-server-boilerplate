@@ -5,20 +5,27 @@ import { Server } from "http";
 import { bootstrapConnections, normalizePort } from "../../../utils";
 import { ErrorMessages } from "../errorMessages";
 import { TestClient } from "../../../utils";
+import { AddressInfo } from "ws";
 
 let app: Server;
 let db: Connection;
-const host = process.env.TEST_GRAPHQL_ENDPOINT as string;
+let tc: TestClient;
+let host: string;
 const redis = new Redis();
 const password = "Password1!";
 const email = "dylantestingtonlogin@myemail.com";
-const tc = new TestClient(host);
+
 beforeAll(async () => {
   const resp = await bootstrapConnections(normalizePort(process.env.TEST_PORT));
   if (resp) {
     app = resp.app;
+    const { port } = app.address() as AddressInfo;
+    TestClient.setEnv(port);
     db = resp.db;
   }
+
+  host = process.env.TEST_GRAPHQL_ENDPOINT as string;
+  tc = new TestClient(host);
   const user = {
     email,
     firstName: "Dylan",

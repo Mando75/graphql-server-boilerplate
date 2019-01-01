@@ -16,6 +16,7 @@ import { createShield } from "./createShield";
 import * as RateLimit from "express-rate-limit";
 import * as RateLimitStore from "rate-limit-redis";
 import passport from "./passport";
+import { AddressInfo } from "ws";
 
 export const redis = new Redis();
 redis.on("error", () => {
@@ -64,11 +65,13 @@ export const bootstrapConnections = async (port: number) => {
     });
 
     apolloServer.applyMiddleware({ app: server, path: "/graphql", cors });
-    app = await server.listen({
-      port
-    });
+    app = await server.listen(port);
 
-    console.log(`🚀  Server ready at ${port}: Happy Coding!`);
+    console.log(
+      `🚀  Server ready at http://localhost:${
+        (app.address() as AddressInfo).port
+      }: Happy Coding!`
+    );
     return { app, db };
   } catch (e) {
     console.error("Could not bootstrap server connections. Exiting", e);

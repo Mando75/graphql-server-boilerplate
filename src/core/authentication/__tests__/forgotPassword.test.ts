@@ -11,22 +11,27 @@ import * as Redis from "ioredis";
 import { createForgotPasswordLink } from "../connectors/lib";
 import { ErrorMessages } from "../errorMessages";
 import { lockAccount } from "../connectors/sendForgotPasswordEmail";
+import { AddressInfo } from "ws";
 
 const redis = new Redis();
-const host = process.env.TEST_GRAPHQL_ENDPOINT as string;
+let host: string;
 let app: Server;
 let db: Connection;
 const email = "testingforgotPassword@mail.com";
 const password = "P@ssword!1";
-const tc = new TestClient(host);
+let tc: TestClient;
 let user: User;
 
 beforeAll(async () => {
   const resp = await bootstrapConnections(normalizePort(process.env.TEST_PORT));
   if (resp) {
     app = resp.app;
+    const port = (app.address() as AddressInfo).port;
+    TestClient.setEnv(port);
     db = resp.db;
   }
+  host = process.env.TEST_GRAPHQL_ENDPOINT as string;
+  tc = new TestClient(host);
   user = await TestClient.createUser(email, password, true);
 });
 
@@ -92,8 +97,6 @@ describe("forgotPassword", () => {
   });
 
   it("allows us to log in with new password", async () => {
-    const u = (await User.findOne({ email })) as User;
-    console.log(u.accountLocked);
     const response = await tc.login(email, newPassword);
     expect(response.data).toEqual({ login: null });
   });
