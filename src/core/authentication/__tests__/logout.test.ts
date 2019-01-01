@@ -1,25 +1,13 @@
 import "reflect-metadata";
-import {
-  bootstrapConnections,
-  normalizePort,
-  TestClient
-} from "../../../utils";
-import { Server } from "http";
-import { Connection } from "typeorm";
+import { CreateTypeORMConnection, TestClient } from "../../../utils";
 import { User } from "../../../entity/User";
 import { AccountType } from "../../../enums/accountType.enum";
 
 const host = process.env.TEST_GRAPHQL_ENDPOINT as string;
-let app: Server;
-let db: Connection;
 let userId: string;
 
 beforeAll(async () => {
-  const resp = await bootstrapConnections(normalizePort(process.env.TEST_PORT));
-  if (resp) {
-    app = resp.app;
-    db = resp.db;
-  }
+  await CreateTypeORMConnection();
   const user = await User.create({
     firstName: "Dylan",
     lastName: "Testington",
@@ -64,9 +52,4 @@ describe("logout", () => {
     // Logout should destroy both sessions
     expect(await sess1.me()).toEqual(await sess2.me());
   });
-});
-
-afterAll(async () => {
-  await db.close();
-  await app.close();
 });

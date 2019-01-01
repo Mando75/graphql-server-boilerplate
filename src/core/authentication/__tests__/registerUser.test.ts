@@ -1,11 +1,5 @@
 import "reflect-metadata";
-import {
-  bootstrapConnections,
-  normalizePort,
-  TestClient
-} from "../../../utils";
-import { Server } from "http";
-import { Connection } from "typeorm";
+import { CreateTypeORMConnection, TestClient } from "../../../utils";
 import { ErrorMessages } from "../errorMessages";
 
 const host = process.env.TEST_GRAPHQL_ENDPOINT as string;
@@ -22,16 +16,10 @@ const user = ({
   lastName: last
 });
 
-let app: Server;
-let db: Connection;
 const tc = new TestClient(host);
 
 beforeAll(async () => {
-  const resp = await bootstrapConnections(normalizePort(process.env.TEST_PORT));
-  if (resp) {
-    app = resp.app;
-    db = resp.db;
-  }
+  await CreateTypeORMConnection();
 });
 
 describe("Registering a new user", async () => {
@@ -90,9 +78,4 @@ describe("Registering a new user", async () => {
     expect(registerUser[1].path).toEqual("password");
     expect(registerUser[1].message).toEqual(ErrorMessages.PASSWORD_TOO_SIMPLE);
   });
-});
-
-afterAll(async () => {
-  await db.close();
-  await app.close();
 });

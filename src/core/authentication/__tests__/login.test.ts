@@ -1,31 +1,16 @@
-import { Connection } from "typeorm";
 import * as Redis from "ioredis";
 import { User } from "../../../entity/User";
-import { Server } from "http";
-import { bootstrapConnections, normalizePort } from "../../../utils";
 import { ErrorMessages } from "../errorMessages";
-import { TestClient } from "../../../utils";
-import { AddressInfo } from "ws";
+import { CreateTypeORMConnection, TestClient } from "../../../utils";
 
-let app: Server;
-let db: Connection;
-let tc: TestClient;
-let host: string;
+const host = process.env.TEST_GRAPHQL_ENDPOINT as string;
+const tc = new TestClient(host);
 const redis = new Redis();
 const password = "Password1!";
 const email = "dylantestingtonlogin@myemail.com";
 
 beforeAll(async () => {
-  const resp = await bootstrapConnections(normalizePort(process.env.TEST_PORT));
-  if (resp) {
-    app = resp.app;
-    const { port } = app.address() as AddressInfo;
-    TestClient.setEnv(port);
-    db = resp.db;
-  }
-
-  host = process.env.TEST_GRAPHQL_ENDPOINT as string;
-  tc = new TestClient(host);
+  await CreateTypeORMConnection();
   const user = {
     email,
     firstName: "Dylan",
@@ -85,6 +70,4 @@ describe("Logging in a user", () => {
 
 afterAll(async () => {
   await redis.disconnect();
-  await db.close();
-  await app.close();
 });

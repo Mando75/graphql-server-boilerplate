@@ -3,29 +3,16 @@ import {
   registerUser,
   userExists
 } from "../connectors/lib";
-import { Connection } from "typeorm";
 import { AccountType } from "../../../enums/accountType.enum";
 import { User } from "../../../entity/User";
-import { Server } from "http";
 import * as Redis from "ioredis";
 import * as rp from "request-promise";
-import { bootstrapConnections, normalizePort } from "../../../utils";
-import { TestClient } from "../../../utils";
-import { AddressInfo } from "ws";
-
-let app: Server;
-let db: Connection;
+import { CreateTypeORMConnection } from "../../../utils";
 const redis = new Redis();
 let userId: string;
 
 beforeAll(async () => {
-  const resp = await bootstrapConnections(normalizePort(process.env.TEST_PORT));
-  if (resp) {
-    app = resp.app;
-    const { port } = app.address() as AddressInfo;
-    TestClient.setEnv(port);
-    db = resp.db;
-  }
+  await CreateTypeORMConnection();
 });
 
 describe("The register function", async () => {
@@ -80,7 +67,7 @@ describe("createEmailConfirmationLink", () => {
   });
   it("confirms the users and clears the redis key", async () => {
     const url = await createConfirmEmailLink(
-      "http://localhost:4001",
+      process.env.TEST_HOST as string,
       userId,
       redis
     );
@@ -98,7 +85,7 @@ describe("createEmailConfirmationLink", () => {
   it("sends invalid back if bad id sent", async () => {
     try {
       await rp({
-        uri: `http://localhost:4001/confirm/12083`,
+        uri: `${process.env.TEST_HOST}/confirm/12083`,
         json: true
       });
     } catch (e) {
@@ -109,6 +96,4 @@ describe("createEmailConfirmationLink", () => {
 
 afterAll(async () => {
   await redis.disconnect();
-  await db.close();
-  await app.close();
 });
