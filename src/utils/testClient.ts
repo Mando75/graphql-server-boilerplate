@@ -1,6 +1,7 @@
 import * as rp from "request-promise";
 import { User } from "../entity/User";
 import { AccountType } from "../enums/accountType.enum";
+import * as faker from "faker";
 
 export class TestClient {
   url: string;
@@ -9,6 +10,15 @@ export class TestClient {
     withCredentials: boolean;
     json: boolean;
   };
+  fakeUser: {
+    firstName: string;
+    lastName: string;
+    accountType: AccountType;
+    email: string;
+    password: string;
+    emailConfirmed: boolean;
+  };
+  testUser: User | undefined;
 
   constructor(url: string) {
     this.url = url;
@@ -16,6 +26,14 @@ export class TestClient {
       jar: rp.jar(),
       withCredentials: true,
       json: true
+    };
+    this.fakeUser = {
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName(),
+      accountType: AccountType.USER,
+      email: faker.internet.exampleEmail().toLowerCase(),
+      password: faker.internet.password(8, false) + "@Aa1",
+      emailConfirmed: false
     };
   }
 
@@ -25,15 +43,16 @@ export class TestClient {
   }
 
   async register(
-    user: {
+    confirmEmail: boolean,
+    user?: {
       email: string;
       password: string;
       firstName: string;
       lastName: string;
-    },
-    confirmEmail: boolean
+    }
   ) {
-    const resp = rp.post(this.url, {
+    if (!user) user = this.fakeUser;
+    const resp = await rp.post(this.url, {
       ...this.options,
       body: {
         query: `mutation {
@@ -49,11 +68,11 @@ export class TestClient {
                 }`
       }
     });
+    this.testUser = await User.findOne({ email: user.email });
     if (confirmEmail) {
-      const ruser = await User.findOne({ email: user.email });
-      if (ruser) {
-        ruser.emailConfirmed = true;
-        await ruser.save();
+      if (this.testUser) {
+        this.testUser.emailConfirmed = true;
+        await this.testUser.save();
       }
     }
     return resp;
@@ -88,13 +107,15 @@ export class TestClient {
     });
   }
 
-  async login(email: string, password: string) {
+  async login(email?: string, password?: string) {
     return rp.post(this.url, {
       ...this.options,
       body: {
         query: `
         mutation {
-          login(user: { email: "${email}", password: "${password}" }) {
+          login(user: { email: "${
+            email ? email : this.fakeUser.email
+          }", password: "${password ? password : this.fakeUser.password}" }) {
             path
             message
           }
@@ -108,18 +129,9 @@ export class TestClient {
     return rp.post(this.url, { ...this.options, body: { query } });
   }
 
-  static async createUser(
-    email: string,
-    password: string,
-    emailConfirmed: boolean
-  ) {
-    return await User.create({
-      firstName: "Dylan",
-      lastName: "Testington",
-      accountType: AccountType.USER,
-      email,
-      password,
-      emailConfirmed
-    }).save();
+  async createUser(emailConfirmed: boolean) {
+    this.fakeUser.emailConfirmed = emailConfirmed;
+    this.testUser = await User.create(this.fakeUser).save();
+    return this.testUser;
   }
 }

@@ -8,6 +8,8 @@ export const permissions = {
   Mutation: {
     registerUser: allow,
     login: allow,
-    logout: isAuthenticated
+    logout: isAuthenticated,
+    forgotPasswordChange: allow,
+    sendForgotPasswordEmail: allow
   }
 };

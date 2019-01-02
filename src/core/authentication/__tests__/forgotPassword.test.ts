@@ -7,16 +7,13 @@ import { ErrorMessages } from "../errorMessages";
 import { lockAccount } from "../connectors/sendForgotPasswordEmail";
 
 const redis = new Redis();
-const email = "testingforgotPassword@mail.com";
-const password = "P@ssword!1";
-let tc: TestClient;
+const host = process.env.TEST_GRAPHQL_ENDPOINT as string;
+const tc = new TestClient(host);
 let user: User;
 
 beforeAll(async () => {
   await CreateTypeORMConnection();
-  const host = process.env.TEST_GRAPHQL_ENDPOINT as string;
-  tc = new TestClient(host);
-  user = await TestClient.createUser(email, password, true);
+  user = await tc.createUser(true);
 });
 
 describe("forgotPassword", () => {
@@ -37,7 +34,7 @@ describe("forgotPassword", () => {
     url = await createForgotPasswordLink("", user.id, redis);
     const parts = url.split("/");
     key = parts[parts.length - 1];
-    expect(await tc.login(email, password)).toEqual({
+    expect(await tc.login()).toEqual({
       data: {
         login: [
           {
@@ -81,7 +78,7 @@ describe("forgotPassword", () => {
   });
 
   it("allows us to log in with new password", async () => {
-    const response = await tc.login(email, newPassword);
+    const response = await tc.login("", newPassword);
     expect(response.data).toEqual({ login: null });
   });
 });

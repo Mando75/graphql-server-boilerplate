@@ -1,28 +1,19 @@
 import * as Redis from "ioredis";
-import { User } from "../../../entity/User";
 import { ErrorMessages } from "../errorMessages";
 import { CreateTypeORMConnection, TestClient } from "../../../utils";
 
 const host = process.env.TEST_GRAPHQL_ENDPOINT as string;
 const tc = new TestClient(host);
 const redis = new Redis();
-const password = "Password1!";
-const email = "dylantestingtonlogin@myemail.com";
 
 beforeAll(async () => {
   await CreateTypeORMConnection();
-  const user = {
-    email,
-    firstName: "Dylan",
-    lastName: "Testington",
-    password
-  };
-  await tc.register(user, false);
+  await tc.createUser(false);
 });
 
 describe("Logging in a user", () => {
   it("catches no email confirmation", async () => {
-    const response = await tc.login(email, password);
+    const response = await tc.login();
     expect(response.data).toEqual({
       login: [
         {
@@ -34,17 +25,16 @@ describe("Logging in a user", () => {
   });
 
   it("verifies proper login", async () => {
-    const user = await User.findOne({ email });
-    if (user) {
-      user.emailConfirmed = true;
-      await user.save();
+    if (tc.testUser) {
+      tc.testUser.emailConfirmed = true;
+      await tc.testUser.save();
     }
-    const response = await tc.login(email, password);
+    const response = await tc.login();
     expect(response.data).toEqual({ login: null });
   });
 
   it("catches bad password", async () => {
-    const response = await tc.login(email, "badpassword");
+    const response = await tc.login(tc.fakeUser.email, "badpassword");
     expect(response.data).toEqual({
       login: [
         {
@@ -56,7 +46,7 @@ describe("Logging in a user", () => {
   });
 
   it("catches bad email", async () => {
-    const response = await tc.login("bademail@email.com", password);
+    const response = await tc.login("bademail@email.com", tc.fakeUser.password);
     expect(response.data).toEqual({
       login: [
         {
