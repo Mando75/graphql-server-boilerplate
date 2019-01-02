@@ -7,7 +7,7 @@ import { AccountType } from "../../../enums/accountType.enum";
 import { User } from "../../../entity/User";
 import * as Redis from "ioredis";
 import * as rp from "request-promise";
-import { CreateTypeORMConnection } from "../../../utils";
+import { CreateTypeORMConnection, TestClient } from "../../../utils";
 const redis = new Redis();
 let userId: string;
 
@@ -15,13 +15,9 @@ beforeAll(async () => {
   await CreateTypeORMConnection();
 });
 
+const client = new TestClient(process.env.TEST_GRAPHQL_ENDPOINT as string);
 describe("The register function", async () => {
-  const user = {
-    email: "dylantestington@myemail.com",
-    firstName: "Dylan",
-    lastName: "Testington",
-    password: "THIS IS NOT A HASHED PASSWORD"
-  };
+  const user = client.fakeUser;
 
   it("Registers a user correctly", async () => {
     const newUser = await registerUser({
@@ -44,7 +40,7 @@ describe("The register function", async () => {
 
 describe("User exists", async () => {
   it("returns true when a user exists", async () => {
-    const email = "dylantestington@myemail.com";
+    const email = client.fakeUser.email;
     expect(await userExists(email)).toBe(true);
   });
 
@@ -56,13 +52,8 @@ describe("User exists", async () => {
 
 describe("createEmailConfirmationLink", () => {
   beforeAll(async () => {
-    const user = await User.create({
-      email: "createConfirmUser@test.com",
-      password: "hashedpassword",
-      firstName: "test",
-      lastName: "test",
-      accountType: AccountType.USER
-    }).save();
+    const tc = new TestClient(process.env.TEST_GRAPHQL_ENDPOINT as string);
+    const user = await tc.createUser(false);
     userId = user.id;
   });
   it("confirms the users and clears the redis key", async () => {
